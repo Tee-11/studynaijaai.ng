@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="max-width: 900px; margin: 35px auto; padding: 20px;">
+
+    <div style="background: white; padding: 25px; border-radius: 14px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.06);">
+        <h1 style="margin-top: 0;">StudyNaija AI Quiz</h1>
+
+        <p><strong>Subject:</strong> {{ quiz_session.subject }}</p>
+        <p><strong>Topic:</strong> {{ quiz_session.topic }}</p>
+        <p><strong>Class:</strong> {{ quiz_session.class_level }}</p>
+        <p><strong>Difficulty:</strong> {{ quiz_session.difficulty }}</p>
+        <p><strong>Questions:</strong> {{ questions|length }}</p>
+    </div>
+
+    {% if questions %}
+    <form method="POST" action="{{ url_for('submit_ai_quiz', session_id=quiz_session.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% for question in questions %}
+        <div style="background: white; padding: 25px; border-radius: 14px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+
+            <h3>
+                Question {{ loop.index }} of {{ questions|length }}
+            </h3>
+
+            <p style="font-size: 17px; font-weight: 600;">
+                {{ question.question }}
+            </p>
+
+            {% for letter, option in [
+                ('A', question.option_a),
+                ('B', question.option_b),
+                ('C', question.option_c),
+                ('D', question.option_d)
+            ] %}
+            <label style="display: block; padding: 12px; margin: 8px 0; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer;">
+                <input
+                    type="radio"
+                    name="answer_{{ question.id }}"
+                    value="{{ letter }}"
+                    required
+                >
+                <strong>{{ letter }}.</strong> {{ option }}
+            </label>
+            {% endfor %}
+
+        </div>
+        {% endfor %}
+
+        <button type="submit" style="background: #2563eb; color: white; border: none; padding: 14px 25px; border-radius: 8px; font-size: 16px; cursor: pointer;">
+            Submit Quiz
+        </button>
+
+    </form>
+    {% else %}
+        <div style="background: white; padding: 25px; border-radius: 14px;">
+            <p>No questions are available for this quiz.</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}
+

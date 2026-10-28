@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}
+Challenges
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-head">
+
+    <h1>
+        🏆 Challenges
+    </h1>
+
+    <p>
+        Leaderboard based on practice points.
+    </p>
+
+</div>
+
+
+<div class="wide-card">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    #
+                </th>
+
+                <th>
+                    Student
+                </th>
+
+                <th>
+                    Class
+                </th>
+
+                <th>
+                    Points
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for user in leaders %}
+
+                <tr>
+
+                    <td>
+                        {{ loop.index }}
+                    </td>
+
+                    <td>
+                        {{ user.name }}
+                    </td>
+
+                    <td>
+                        {{ user.class_level }}
+                    </td>
+
+                    <td>
+                        <b>
+                            {{ user.points }}
+                        </b>
+                    </td>
+
+                </tr>
+
+            {% else %}
+
+                <tr>
+
+                    <td colspan="4">
+                        No students yet.
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

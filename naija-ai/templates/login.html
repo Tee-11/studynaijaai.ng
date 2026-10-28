@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}
+Login
+{% endblock %}
+
+
+{% block content %}
+
+<div class="form-card">
+
+    <h1>
+        Welcome back 👋
+    </h1>
+
+
+    <p class="muted">
+        Login to continue learning.
+    </p>
+     
+
+    <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <label>
+            Email
+        </label>
+
+        <input
+            type="email"
+            name="email"
+            placeholder="you@example.com"
+            required
+        >
+
+
+        <label>
+            Password
+        </label>
+
+        <input
+            type="password"
+            name="password"
+            required
+        >
+
+
+        <button
+            class="button"
+            type="submit"
+        >
+            Login
+        </button>
+
+    </form>
+
+
+    <p>
+        New here?
+
+        <a href="{{ url_for('register') }}">
+            Create an account
+        </a>
+    </p>
+
+</div>
+
+{% endblock %}

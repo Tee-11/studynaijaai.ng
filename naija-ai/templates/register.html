@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}
+Create Account
+{% endblock %}
+
+
+{% block content %}
+
+<div class="form-card">
+
+    <h1>
+        Create your StudyNaija account
+    </h1>
+
+
+    <p class="muted">
+        Create your free student account.
+    </p>
+
+
+    <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>
+            Name
+        </label>
+
+        <input
+            type="text"
+            name="name"
+            placeholder="Your full name"
+            required
+        >
+
+
+        <label>
+            Email
+        </label>
+
+        <input
+            type="email"
+            name="email"
+            placeholder="you@example.com"
+            required
+        >
+
+
+        <label>
+            Class
+        </label>
+
+        <select name="class_level">
+
+            <option>JSS1</option>
+            <option>JSS2</option>
+            <option>JSS3</option>
+
+            <option>SS1</option>
+            <option>SS2</option>
+            <option>SS3</option>
+
+        </select>
+
+
+        <label>
+            Password
+        </label>
+
+        <input
+            type="password"
+            name="password"
+            minlength="6"
+            placeholder="At least 6 characters"
+            required
+        >
+
+
+        <button
+            class="button"
+            type="submit"
+        >
+            Create Account
+        </button>
+
+    </form>
+
+
+    <p>
+        Already have an account?
+
+        <a href="{{ url_for('login') }}">
+            Login
+        </a>
+    </p>
+
+</div>
+
+{% endblock %}

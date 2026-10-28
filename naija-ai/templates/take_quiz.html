@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}
+Practice Question
+{% endblock %}
+
+
+{% block content %}
+
+<div class="wide-card">
+
+    <span class="pill">
+        {{ quiz.subject }}
+        ·
+        {{ quiz.class_level }}
+    </span>
+
+
+    <h1>
+        {{ quiz.title }}
+    </h1>
+
+
+    <h2>
+        {{ quiz.question }}
+    </h2>
+
+
+    <form
+        method="post"
+        class="answers"
+    >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label class="option">
+
+            <input
+                type="radio"
+                name="answer"
+                value="A"
+                required
+            >
+
+            <b>A.</b>
+
+            {{ quiz.option_a }}
+
+        </label>
+
+
+        <label class="option">
+
+            <input
+                type="radio"
+                name="answer"
+                value="B"
+            >
+
+            <b>B.</b>
+
+            {{ quiz.option_b }}
+
+        </label>
+
+
+        <label class="option">
+
+            <input
+                type="radio"
+                name="answer"
+                value="C"
+            >
+
+            <b>C.</b>
+
+            {{ quiz.option_c }}
+
+        </label>
+
+
+        <label class="option">
+
+            <input
+                type="radio"
+                name="answer"
+                value="D"
+            >
+
+            <b>D.</b>
+
+            {{ quiz.option_d }}
+
+        </label>
+
+
+        <button
+            class="button"
+            type="submit"
+        >
+            Submit Answer
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

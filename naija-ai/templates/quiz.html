@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block title %}
+Practice
+{% endblock %}
+
+{% block content %}
+
+<div style="
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+">
+
+    <a
+        href="{{ url_for('ai_quiz_history') }}"
+        style="
+            display: inline-block;
+            background: #374151;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        "
+    >
+        📚 Quiz History
+    </a>
+
+
+    <a
+        href="{{ url_for('ai_quiz_stats') }}"
+        style="
+            display: inline-block;
+            background: #2563eb;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        "
+    >
+        📊 My Statistics
+    </a>
+
+</div>
+
+
+<div class="page-head">
+
+    <h1>
+        📝 Practice Questions
+    </h1>
+
+    <p>
+        Earn 10 points for every correct answer.
+    </p>
+
+</div>
+
+
+<!-- AI QUIZ GENERATOR -->
+
+<div class="card" style="
+    margin-bottom: 30px;
+    padding: 30px;
+    background: linear-gradient(135deg, #eff6ff, #ffffff);
+    border: 1px solid #dbeafe;
+">
+
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
+
+        <div style="
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+        ">
+            🤖
+        </div>
+
+        <div>
+
+            <h2 style="margin: 0;">
+                AI Quiz Generator
+            </h2>
+
+            <p style="margin: 4px 0 0; color: #6b7280;">
+                Create a personalised quiz with AI.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <form method="POST" action="{{ url_for('create_ai_quiz') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="grid two" style="margin-top: 20px;">
+
+            <div>
+
+                <label for="ai-subject">
+                    <strong>Subject</strong>
+                </label>
+
+                <input
+                    id="ai-subject"
+                    type="text"
+                    name="subject"
+                    placeholder="e.g. Physics"
+                    required
+                    style="
+                        width: 100%;
+                        padding: 12px;
+                        margin-top: 7px;
+                        border: 1px solid #d1d5db;
+                        border-radius: 8px;
+                    "
+                >
+
+            </div>
+
+
+            <div>
+
+                <label for="ai-topic">
+                    <strong>Topic</strong>
+                </label>
+
+                <input
+                    id="ai-topic"
+                    type="text"
+                    name="topic"
+                    placeholder="e.g. Electromagnetic Induction"
+                    required
+                    style="
+                        width: 100%;
+                        padding: 12px;
+                        margin-top: 7px;
+                        border: 1px solid #d1d5db;
+                        border-radius: 8px;
+                    "
+                >
+
+            </div>
+
+
+            <div>
+
+                <label for="ai-count">
+                    <strong>Number of Questions</strong>
+                </label>
+
+                <select
+                    id="ai-count"
+                    name="count"
+                    style="
+                        width: 100%;
+                        padding: 12px;
+                        margin-top: 7px;
+                        border: 1px solid #d1d5db;
+                        border-radius: 8px;
+                        background: white;
+                    "
+                >
+
+                    <option value="5">5 Questions</option>
+                    <option value="10" selected>10 Questions</option>
+                    <option value="15">15 Questions</option>
+                    <option value="20">20 Questions</option>
+
+                </select>
+
+            </div>
+
+
+            <div>
+
+                <label for="ai-difficulty">
+                    <strong>Difficulty</strong>
+                </label>
+
+                <select
+                    id="ai-difficulty"
+                    name="difficulty"
+                    style="
+                        width: 100%;
+                        padding: 12px;
+                        margin-top: 7px;
+                        border: 1px solid #d1d5db;
+                        border-radius: 8px;
+                        background: white;
+                    "
+                >
+
+                    <option value="Easy">
+                        Easy
+                    </option>
+
+                    <option value="Medium" selected>
+                        Medium
+                    </option>
+
+                    <option value="Hard">
+                        Hard
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="submit"
+            style="
+                margin-top: 22px;
+                width: 100%;
+                padding: 14px;
+                border: none;
+                border-radius: 9px;
+                background: #2563eb;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+            "
+        >
+            🤖 Generate AI Quiz
+        </button>
+
+    </form>
+
+</div>
+
+
+<!-- EXISTING PRACTICE QUESTIONS -->
+
+<h2 style="margin-bottom: 15px;">
+    Practice Questions
+</h2>
+
+
+<div class="grid two">
+
+    {% for q in quizzes %}
+
+        <a
+            class="card link-card"
+            href="{{ url_for('take_quiz', quiz_id=q.id) }}"
+        >
+
+            <span class="pill">
+                {{ q.subject }}
+            </span>
+
+            <h2>
+                {{ q.title }}
+            </h2>
+
+            <p>
+                {{ q.question }}
+            </p>
+
+        </a>
+
+    {% else %}
+
+        <div class="empty">
+
+            <h2>
+                No questions yet
+            </h2>
+
+            <p>
+                The administrator hasn't added
+                practice questions yet.
+            </p>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
+

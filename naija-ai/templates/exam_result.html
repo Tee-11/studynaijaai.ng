@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}
+Exam Result
+{% endblock %}
+
+{% block content %}
+
+<div class="wide-card">
+
+    <h1>
+        🎉 Exam Completed
+    </h1>
+
+    <h2>
+        {{ exam_session.exam }}
+        {{ exam_session.subject }}
+    </h2>
+
+    <p>
+        <strong>
+            Score:
+        </strong>
+
+        {{ exam_session.score }}%
+    </p>
+
+    <p>
+        <strong>
+            Correct:
+        </strong>
+
+        {{ exam_session.correct_count }}
+    </p>
+
+    <p>
+        <strong>
+            Wrong:
+        </strong>
+
+        {{ exam_session.wrong_count }}
+    </p>
+
+    <p>
+        <strong>
+            Total Questions:
+        </strong>
+
+        {{ exam_session.total_questions }}
+    </p>
+
+</div>
+
+
+<div class="wide-card">
+
+    <h2>
+        Answer Review
+    </h2>
+
+    {% for question in questions %}
+
+        <div class="exam-review">
+
+            <h3>
+                Question {{ question.question_order }}
+            </h3>
+
+            <p>
+                <strong>
+                    {{ question.question }}
+                </strong>
+            </p>
+
+            <p>
+                Your answer:
+
+                <strong>
+                    {{ question.selected_answer or "Not answered" }}
+                </strong>
+            </p>
+
+            <p>
+                Correct answer:
+
+                <strong>
+                    {{ question.answer }}
+                </strong>
+            </p>
+
+            {% if question.explanation %}
+
+                <p>
+                    <strong>
+                        Explanation:
+                    </strong>
+
+                    {{ question.explanation }}
+                </p>
+
+            {% endif %}
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

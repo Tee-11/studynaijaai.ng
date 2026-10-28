@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Question{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+
+    <h1>📝 {{ question.subject }}</h1>
+
+    <p>
+        {{ question.exam }} {{ question.year }}
+        • {{ question.class_level }}
+    </p>
+
+</div>
+
+<div class="wide-card question-detail">
+
+    <div class="question-meta">
+
+        <span class="pill">
+            {{ question.exam }}
+        </span>
+
+        <span class="pill">
+            {{ question.year }}
+        </span>
+
+        <span class="pill">
+            {{ question.subject }}
+        </span>
+
+        {% if question.topic %}
+            <span class="pill">
+                {{ question.topic }}
+            </span>
+        {% endif %}
+
+    </div>
+
+    <h2>{{ question.question }}</h2>
+
+    <div class="question-options">
+
+        <div class="question-option">
+            <strong>A.</strong>
+            <span>{{ question.option_a }}</span>
+        </div>
+
+        <div class="question-option">
+            <strong>B.</strong>
+            <span>{{ question.option_b }}</span>
+        </div>
+
+        <div class="question-option">
+            <strong>C.</strong>
+            <span>{{ question.option_c }}</span>
+        </div>
+
+        <div class="question-option">
+            <strong>D.</strong>
+            <span>{{ question.option_d }}</span>
+        </div>
+
+    </div>
+
+    <div class="answer-box">
+
+        <h3>✅ Correct Answer</h3>
+
+        <p>
+            <strong>{{ question.answer }}</strong>
+        </p>
+
+    </div>
+
+    {% if question.explanation %}
+
+        <div class="explanation-box">
+
+            <h3>💡 Explanation</h3>
+
+            <p>{{ question.explanation }}</p>
+
+        </div>
+
+    {% endif %}
+
+    <a
+        class="button secondary"
+        href="{{ url_for('question_bank') }}"
+    >
+        ← Back to Question Bank
+    </a>
+
+</div>
+
+{% endblock %}

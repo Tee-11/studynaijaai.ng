@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}
+Challenge History
+{% endblock %}
+
+{% block content %}
+
+<section class="page-head">
+
+    <h1>
+        🏆 Challenge History
+    </h1>
+
+    <p>
+        Track your completed challenges and bonus XP.
+    </p>
+
+</section>
+
+<section class="challenge-history-section">
+
+    <div class="history-card">
+
+        <div class="history-card-heading">
+
+            <div>
+                <h2>🎯 Your Challenges</h2>
+
+                <p class="muted">
+                    Your previous daily challenge activity.
+                </p>
+            </div>
+
+        </div>
+
+        {% if challenge_history %}
+
+            <div class="challenge-history-list">
+
+                {% for challenge in challenge_history %}
+
+                    <div class="history-item">
+
+                        <div class="history-icon">
+
+                            {% if challenge.challenge_type == "note" %}
+                                📚
+                            {% elif challenge.challenge_type == "quiz" %}
+                                🧠
+                            {% elif challenge.challenge_type == "exam" %}
+                                📝
+                            {% else %}
+                                🔥
+                            {% endif %}
+
+                        </div>
+
+                        <div class="history-details">
+
+                            <h3>
+                                {{ challenge.title }}
+                            </h3>
+
+                            <p>
+                                {{ challenge.challenge_date }}
+                            </p>
+
+                            <span>
+                                Progress:
+                                {{ challenge.progress }}/{{ challenge.target
+                                if challenge.target is defined
+                                else 1 }}
+                            </span>
+
+                        </div>
+
+                        <div class="history-result">
+
+                            {% if challenge.completed %}
+
+                                <strong class="history-completed">
+                                    ✓ Completed
+                                </strong>
+
+                                {% if challenge.xp_claimed %}
+
+                                    <span class="history-xp">
+                                        +{{ challenge.xp_reward }} XP
+                                    </span>
+
+                                {% endif %}
+
+                            {% else %}
+
+                                <strong class="history-incomplete">
+                                    Incomplete
+                                </strong>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-history">
+
+                <div class="empty-history-icon">
+                    🎯
+                </div>
+
+                <h3>
+                    No challenge history yet
+                </h3>
+
+                <p class="muted">
+                    Complete a daily challenge and it will appear here.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+<section class="challenge-history-section">
+
+    <div class="history-card">
+
+        <div class="history-card-heading">
+
+            <div>
+                <h2>🎉 Daily Bonuses</h2>
+
+                <p class="muted">
+                    Your all-challenges completion bonuses.
+                </p>
+            </div>
+
+        </div>
+
+        {% if challenge_bonuses %}
+
+            <div class="bonus-history-list">
+
+                {% for bonus in challenge_bonuses %}
+
+                    <div class="bonus-history-item">
+
+                        <div class="bonus-history-icon">
+                            🎉
+                        </div>
+
+                        <div class="bonus-history-details">
+
+                            <strong>
+                                Daily Challenge Bonus
+                            </strong>
+
+                            <span>
+                                {{ bonus.bonus_date }}
+                            </span>
+
+                        </div>
+
+                        <div class="bonus-history-xp">
+                            +{{ bonus.xp_reward }} XP
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-history">
+
+                <div class="empty-history-icon">
+                    ⭐
+                </div>
+
+                <h3>
+                    No bonus XP yet
+                </h3>
+
+                <p class="muted">
+                    Complete all of today's challenges to earn your bonus.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+<a
+    class="back-link"
+    href="{{ url_for('dashboard') }}"
+>
+    ← Back to Dashboard
+</a>
+
+{% endblock %}

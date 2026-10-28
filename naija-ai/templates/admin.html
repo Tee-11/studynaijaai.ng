@@ -1,0 +1,1434 @@
+{% extends "base.html" %}
+
+{% block title %}
+Admin Dashboard
+{% endblock %}
+
+
+{% block content %}
+
+<div class="page-head">
+
+    <h1>
+        🛠️ Admin Dashboard
+    </h1>
+
+    <p>
+        Manage StudyNaija content and students.
+    </p>
+
+</div>
+
+
+<section class="admin-grid">
+
+
+    <!-- ADD LESSON NOTE -->
+
+    <div class="wide-card">
+
+        <h2>
+            Add Lesson Note
+        </h2>
+
+
+        <form
+            method="post"
+            action="{{ url_for('add_note') }}"
+        >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>
+                Title
+            </label>
+
+            <input
+                name="title"
+                placeholder="Example: Newton's Laws of Motion"
+                required
+            >
+
+
+            <label>
+                Subject
+            </label>
+
+            <input
+                name="subject"
+                placeholder="Physics"
+                required
+            >
+
+            <label>
+                Term
+            </label>
+
+            <select name="term">
+                <option value="First Term">First Term</option>
+                <option value="Second Term">Second Term</option>
+                <option value="Third Term">Third Term</option>
+            </select>
+
+
+            <label>
+                Topic
+            </label>
+
+            <input
+                name="topic"
+                placeholder="Example: Newton's Laws of Motion"
+                required
+            >            
+
+            <label>
+                Class
+            </label>
+
+            <select name="class_level">
+
+                <option>JSS1</option>
+                <option>JSS2</option>
+                <option>JSS3</option>
+
+                <option>SS1</option>
+                <option>SS2</option>
+                <option>SS3</option>
+
+            </select>
+
+
+            <label>
+                Content
+            </label>
+
+            <textarea
+                name="content"
+                placeholder="Enter the lesson note..."
+                required
+            ></textarea>
+
+
+            <button
+                class="button"
+                type="submit"
+            >
+                Add Note
+            </button>
+
+        </form>
+
+    </div>
+
+
+
+    <!-- ADD QUIZ -->
+
+    <div class="wide-card">
+
+        <h2>
+            Add Practice Question
+        </h2>
+
+
+        <form
+            method="post"
+            action="{{ url_for('add_quiz') }}"
+        >
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label>
+                Title
+            </label>
+
+            <input
+                name="title"
+                placeholder="Example: Physics Test 1"
+                required
+            >
+
+
+            <label>
+                Subject
+            </label>
+
+            <input
+                name="subject"
+                placeholder="Physics"
+                required
+            >
+
+
+            <label>
+                Class
+            </label>
+
+            <select name="class_level">
+
+                <option>JSS1</option>
+                <option>JSS2</option>
+                <option>JSS3</option>
+
+                <option>SS1</option>
+                <option>SS2</option>
+                <option>SS3</option>
+
+            </select>
+
+
+            <label>
+                Question
+            </label>
+
+            <textarea
+                name="question"
+                placeholder="Enter your question..."
+                required
+            ></textarea>
+
+
+            <label>
+                Option A
+            </label>
+
+            <input
+                name="option_a"
+                required
+            >
+
+
+            <label>
+                Option B
+            </label>
+
+            <input
+                name="option_b"
+                required
+            >
+
+
+            <label>
+                Option C
+            </label>
+
+            <input
+                name="option_c"
+                required
+            >
+
+
+            <label>
+                Option D
+            </label>
+
+            <input
+                name="option_d"
+                required
+            >
+
+
+            <label>
+                Correct Answer
+            </label>
+
+            <select name="answer">
+
+                <option value="A">
+                    A
+                </option>
+
+                <option value="B">
+                    B
+                </option>
+
+                <option value="C">
+                    C
+                </option>
+
+                <option value="D">
+                    D
+                </option>
+
+            </select>
+
+
+            <label>
+                Explanation
+            </label>
+
+            <textarea
+                name="explanation"
+                placeholder="Explain why the answer is correct..."
+            ></textarea>
+
+
+            <button
+                class="button"
+                type="submit"
+            >
+                Add Question
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
+
+<!-- IMPORT QUESTIONS FROM CSV -->
+
+<div class="wide-card">
+
+<h2>
+    📥 Import Questions from CSV
+</h2>
+
+<p class="muted">
+    Upload a CSV file containing your WAEC, NECO, or JAMB questions.
+    You can prepare hundreds of questions in Excel or Google Sheets
+    and upload them all at once.
+</p>
+
+<form
+    method="post"
+    action="{{ url_for('import_questions_csv') }}"
+    enctype="multipart/form-data"
+>
+
+    <input
+        type="hidden"
+        name="csrf_token"
+        value="{{ csrf_token() }}"
+    >
+
+    <label>
+        Choose CSV File
+    </label>
+
+    <input
+        type="file"
+        name="csv_file"
+        accept=".csv,text/csv"
+        required
+    >
+
+    <p class="muted" style="margin-top: 10px;">
+        Required columns:
+        exam, year, subject, class_level, topic,
+        question, option_a, option_b, option_c,
+        option_d, answer, explanation
+    </p>
+
+    <button
+        type="submit"
+        class="button"
+        style="margin-top: 15px;"
+    >
+        📤 Upload Questions
+    </button>
+
+</form>
+
+</div>
+
+
+
+<!-- ADD QUESTION BANK QUESTIONS -->
+
+<div class="wide-card">
+
+    <h2>
+        📝 Add Question Bank Questions
+    </h2>
+
+    <form
+        method="post"
+        action="{{ url_for('add_question') }}"
+        id="question-bank-form"
+    >
+
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}"
+        >
+
+        <label>
+            Exam
+        </label>
+
+        <select name="exam" required>
+
+            <option value="">
+                Select Exam
+            </option>
+
+            <option value="WAEC">
+                WAEC
+            </option>
+
+            <option value="NECO">
+                NECO
+            </option>
+
+            <option value="JAMB">
+                JAMB
+            </option>
+
+        </select>
+
+
+        <label>
+            Exam Year
+        </label>
+
+        <input
+            type="number"
+            name="year"
+            min="2000"
+            max="2100"
+            placeholder="Example: 2025"
+            required
+        >
+
+
+        <label>
+            Subject
+        </label>
+
+        <input
+            type="text"
+            name="subject"
+            placeholder="Example: Mathematics"
+            required
+        >
+
+
+        <label>
+            Class
+        </label>
+
+        <select name="class_level" required>
+
+            <option>JSS1</option>
+            <option>JSS2</option>
+            <option>JSS3</option>
+
+            <option>SS1</option>
+            <option selected>SS2</option>
+            <option>SS3</option>
+
+        </select>
+
+
+        <div id="questions-container">
+
+            <div class="question-card">
+
+                <h3>
+                    Question 1
+                </h3>
+
+
+                <label>
+                    Topic
+                </label>
+
+                <input
+                    type="text"
+                    name="topic"
+                    placeholder="Example: Quadratic Equations"
+                >
+
+
+                <label>
+                    Question
+                </label>
+
+                <textarea
+                    name="question"
+                    placeholder="Enter the question..."
+                    required
+                ></textarea>
+
+
+                <label>
+                    Option A
+                </label>
+
+                <input
+                    name="option_a"
+                    placeholder="Option A"
+                    required
+                >
+
+
+                <label>
+                    Option B
+                </label>
+
+                <input
+                    name="option_b"
+                    placeholder="Option B"
+                    required
+                >
+
+
+                <label>
+                    Option C
+                </label>
+
+                <input
+                    name="option_c"
+                    placeholder="Option C"
+                    required
+                >
+
+
+                <label>
+                    Option D
+                </label>
+
+                <input
+                    name="option_d"
+                    placeholder="Option D"
+                    required
+                >
+
+
+                <label>
+                    Correct Answer
+                </label>
+
+                <select name="answer" required>
+
+                    <option value="">
+                        Select Answer
+                    </option>
+
+                    <option value="A">
+                        A
+                    </option>
+
+                    <option value="B">
+                        B
+                    </option>
+
+                    <option value="C">
+                        C
+                    </option>
+
+                    <option value="D">
+                        D
+                    </option>
+
+                </select>
+
+
+                <label>
+                    Explanation
+                </label>
+
+                <textarea
+                    name="explanation"
+                    placeholder="Explain why the answer is correct..."
+                ></textarea>
+
+
+                <button
+                    type="button"
+                    class="danger-button remove-question"
+                    onclick="removeQuestion(this)"
+                    style="display: none;"
+                >
+                    Remove Question
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div style="margin-top: 20px;">
+
+            <button
+                type="button"
+                class="button"
+                onclick="addQuestion()"
+            >
+                ➕ Add Another Question
+            </button>
+
+            <button
+                type="submit"
+                class="button"
+            >
+                💾 Save All Questions
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+
+let questionNumber = 1;
+
+
+function addQuestion() {
+
+    questionNumber++;
+
+    const container = document.getElementById(
+        "questions-container"
+    );
+
+    const card = document.createElement(
+        "div"
+    );
+
+    card.className = "question-card";
+
+    card.innerHTML = `
+
+        <h3>
+            Question ${questionNumber}
+        </h3>
+
+        <label>
+            Topic
+        </label>
+
+        <input
+            type="text"
+            name="topic"
+            placeholder="Example: Quadratic Equations"
+        >
+
+        <label>
+            Question
+        </label>
+
+        <textarea
+            name="question"
+            placeholder="Enter the question..."
+            required
+        ></textarea>
+
+        <label>
+            Option A
+        </label>
+
+        <input
+            name="option_a"
+            placeholder="Option A"
+            required
+        >
+
+        <label>
+            Option B
+        </label>
+
+        <input
+            name="option_b"
+            placeholder="Option B"
+            required
+        >
+
+        <label>
+            Option C
+        </label>
+
+        <input
+            name="option_c"
+            placeholder="Option C"
+            required
+        >
+
+        <label>
+            Option D
+        </label>
+
+        <input
+            name="option_d"
+            placeholder="Option D"
+            required
+        >
+
+        <label>
+            Correct Answer
+        </label>
+
+        <select name="answer" required>
+
+            <option value="">
+                Select Answer
+            </option>
+
+            <option value="A">
+                A
+            </option>
+
+            <option value="B">
+                B
+            </option>
+
+            <option value="C">
+                C
+            </option>
+
+            <option value="D">
+                D
+            </option>
+
+        </select>
+
+        <label>
+            Explanation
+        </label>
+
+        <textarea
+            name="explanation"
+            placeholder="Explain why the answer is correct..."
+        ></textarea>
+
+        <button
+            type="button"
+            class="danger-button remove-question"
+            onclick="removeQuestion(this)"
+        >
+            🗑️ Remove Question
+        </button>
+    `;
+
+    container.appendChild(card);
+
+    updateRemoveButtons();
+}
+
+
+function removeQuestion(button) {
+
+    const card = button.closest(
+        ".question-card"
+    );
+
+    card.remove();
+
+    updateQuestionNumbers();
+    updateRemoveButtons();
+}
+
+
+function updateQuestionNumbers() {
+
+    const cards = document.querySelectorAll(
+        ".question-card"
+    );
+
+    cards.forEach(
+        (card, index) => {
+
+            const heading = card.querySelector(
+                "h3"
+            );
+
+            heading.textContent =
+                `Question ${index + 1}`;
+
+        }
+    );
+
+    questionNumber = cards.length;
+}
+
+
+function updateRemoveButtons() {
+
+    const buttons = document.querySelectorAll(
+        ".remove-question"
+    );
+
+    if (buttons.length === 1) {
+
+        buttons[0].style.display = "none";
+
+        return;
+    }
+
+    buttons.forEach(
+        button => {
+
+            button.style.display =
+                "inline-block";
+
+        }
+    );
+}
+
+</script>
+
+
+
+<!-- STUDENTS -->
+
+<div class="wide-card">
+
+<h2>
+    👨‍🎓 Students
+</h2>
+
+
+<table>
+
+    <thead>
+
+        <tr>
+
+            <th>
+                Name
+            </th>
+
+            <th>
+                Email
+            </th>
+
+            <th>
+                Class
+            </th>
+
+            <th>
+                Points
+            </th>
+
+            <th>
+                Plan
+            </th>
+
+            <th>
+                Manage Subscription
+            </th>
+
+            <th>
+                Action
+            </th>
+
+        </tr>
+
+    </thead>
+
+
+    <tbody>
+
+        {% for student in students %}
+
+            <tr>
+
+                <td>
+                    {{ student.name }}
+                </td>
+
+                <td>
+                    {{ student.email }}
+                </td>
+
+                <td>
+                    {{ student.class_level }}
+                </td>
+
+                <td>
+                    {{ student.points }}
+                </td>
+
+                <td>
+
+                    {% if student.plan == "premium" %}
+
+                        <strong>
+                            ⭐ Premium
+                        </strong>
+
+                    {% else %}
+
+                        Free
+
+                    {% endif %}
+
+                </td>
+
+                <td>
+
+                    <form
+                        method="post"
+                        action="{{ url_for(
+                            'update_student_premium',
+                            user_id=student.id
+                        ) }}"
+                        onsubmit="return confirm(
+                            'Change this student’s subscription plan?'
+                        );"
+                    >
+
+                        <input
+                            type="hidden"
+                            name="csrf_token"
+                            value="{{ csrf_token() }}"
+                        >
+
+                        {% if student.plan == "premium" %}
+
+                            <input
+                                type="hidden"
+                                name="plan"
+                                value="free"
+                            >
+
+                            <button
+                                class="button"
+                                type="submit"
+                            >
+                                Return to Free
+                            </button>
+
+                        {% else %}
+
+                            <input
+                                type="hidden"
+                                name="plan"
+                                value="premium"
+                            >
+
+                            <button
+                                class="button"
+                                type="submit"
+                            >
+                                Upgrade to Premium
+                            </button>
+
+                        {% endif %}
+
+                    </form>
+
+                </td>
+
+                <td>
+
+                    <form
+                        method="post"
+                        action="{{ url_for(
+                            'delete_student',
+                            user_id=student.id
+                        ) }}"
+                        onsubmit="return confirm(
+                            'Delete this student?'
+                        );"
+                    >
+
+                        <input
+                            type="hidden"
+                            name="csrf_token"
+                            value="{{ csrf_token() }}"
+                        >
+
+                        <button
+                            class="danger-button"
+                            type="submit"
+                        >
+                            Delete
+                        </button>
+
+                    </form>
+
+                </td>
+
+            </tr>
+
+        {% else %}
+
+            <tr>
+
+                <td colspan="7">
+                    No students registered yet.
+                </td>
+
+            </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+</div>
+
+
+
+
+<!-- NOTES -->
+
+<div class="wide-card">
+
+    <h2>
+        📚 Existing Lesson Notes
+    </h2>
+
+
+    {% for note in notes %}
+
+        <div class="admin-row">
+
+            <span>
+
+                <b>
+                    {{ note.title }}
+                </b>
+
+                —
+                {{ note.subject }}
+
+                —
+                {{ note.class_level }}
+
+            </span>
+
+
+            <form
+                method="post"
+                action="{{ url_for(
+                    'delete_note',
+                    note_id=note.id
+                ) }}"
+                onsubmit="return confirm(
+                    'Delete this note?'
+                );"
+            >
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button
+                    class="danger-button"
+                    type="submit"
+                >
+                    Delete
+                </button>
+
+            </form>
+
+        </div>
+
+    {% else %}
+
+        <p class="muted">
+            No lesson notes yet.
+        </p>
+
+    {% endfor %}
+
+</div>
+
+
+
+<!-- QUIZZES -->
+
+<div class="wide-card">
+
+    <h2>
+        📝 Existing Quiz Questions
+    </h2>
+
+
+    {% for q in quizzes %}
+
+        <div class="admin-row">
+
+            <span>
+
+                <b>
+                    {{ q.title }}
+                </b>
+
+                —
+                {{ q.subject }}
+
+                —
+                {{ q.class_level }}
+
+            </span>
+
+
+            <form
+                method="post"
+                action="{{ url_for(
+                    'delete_quiz',
+                    quiz_id=q.id
+                ) }}"
+                onsubmit="return confirm(
+                    'Delete this question?'
+                );"
+            >
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button
+                    class="danger-button"
+                    type="submit"
+                >
+                    Delete
+                </button>
+
+            </form>
+
+        </div>
+
+    {% else %}
+
+        <p class="muted">
+            No quiz questions yet.
+        </p>
+
+    {% endfor %}
+
+</div>
+
+<!-- QUESTION BANK -->
+
+<div class="wide-card">
+        <h2>
+        📚 Question Bank
+    </h2>
+
+    <form
+        method="get"
+        action="{{ url_for('admin') }}"
+        style="
+            margin-top: 20px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8fafc;
+            border: 1px solid #dbe3ef;
+            border-radius: 12px;
+        "
+    >
+
+        <div
+            style="
+                display: grid;
+                grid-template-columns:
+                    repeat(auto-fit, minmax(180px, 1fr));
+                gap: 12px;
+            "
+        >
+
+            <input
+                type="text"
+                name="question_search"
+                placeholder="🔎 Search question..."
+                value="{{ request.args.get('question_search', '') }}"
+            >
+
+            <select name="question_exam">
+
+                <option value="">
+                    All Exams
+                </option>
+
+                <option
+                    value="WAEC"
+                    {% if request.args.get('question_exam') == 'WAEC' %}
+                        selected
+                    {% endif %}
+                >
+                    WAEC
+                </option>
+
+                <option
+                    value="NECO"
+                    {% if request.args.get('question_exam') == 'NECO' %}
+                        selected
+                    {% endif %}
+                >
+                    NECO
+                </option>
+
+                <option
+                    value="JAMB"
+                    {% if request.args.get('question_exam') == 'JAMB' %}
+                        selected
+                    {% endif %}
+                >
+                    JAMB
+                </option>
+
+            </select>
+
+            <input
+                type="text"
+                name="question_subject"
+                placeholder="📚 Subject"
+                value="{{ request.args.get('question_subject', '') }}"
+            >
+
+            <input
+                type="number"
+                name="question_year"
+                placeholder="📅 Year"
+                value="{{ request.args.get('question_year', '') }}"
+            >
+
+            <input
+                type="text"
+                name="question_class"
+                placeholder="🎓 Class"
+                value="{{ request.args.get('question_class', '') }}"
+            >
+
+            <input
+                type="text"
+                name="question_topic"
+                placeholder="📖 Topic"
+                value="{{ request.args.get('question_topic', '') }}"
+            >
+
+        </div>
+
+        <div style="margin-top: 15px;">
+
+            <button
+                type="submit"
+                class="button"
+            >
+                🔎 Search / Filter
+            </button>
+
+            <a
+                href="{{ url_for('admin') }}"
+                class="button"
+                style="margin-left: 8px;"
+            >
+                🔄 Clear Filters
+            </a>
+
+        </div>
+
+    </form>
+
+    {% if questions %}
+        
+
+
+        <form
+            method="post"
+            action="{{ url_for('delete_questions_bulk') }}"
+            id="bulk-delete-form"
+            onsubmit="return confirmBulkDelete();"
+        >
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
+
+            <div style="margin-bottom: 20px;">
+
+                <label
+                    style="
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        cursor: pointer;
+                        font-weight: 600;
+                    "
+                >
+
+                    <input
+                        type="checkbox"
+                        id="select-all-questions"
+                        onchange="toggleAllQuestions(this)"
+                    >
+
+                    Select All Questions
+
+                </label>
+
+            </div>
+
+
+            {% for question in questions %}
+
+                <div class="admin-row">
+
+                    <span
+                        style="
+                            display: flex;
+                            align-items: flex-start;
+                            gap: 12px;
+                        "
+                    >
+
+                        <input
+                            type="checkbox"
+                            name="question_ids"
+                            value="{{ question.id }}"
+                            class="question-checkbox"
+                        >
+
+                        <span>
+
+                            <b>
+                                {{ question.exam }}
+                                {{ question.year }}
+                            </b>
+
+                            —
+                            {{ question.subject }}
+
+                            —
+                            {{ question.class_level }}
+
+                            {% if question.topic %}
+                                —
+                                {{ question.topic }}
+                            {% endif %}
+
+                            <br>
+
+                            {{ question.question[:150] }}
+
+                            {% if question.question|length > 150 %}
+                                ...
+                            {% endif %}
+
+                        </span>
+
+                    </span>
+
+                </div>
+           
+            <div style="display: flex; gap: 8px; align-items: center;">
+
+                <a
+                    href="{{ url_for(
+                        'edit_question',
+                        question_id=question.id
+                    ) }}"
+                    class="button"
+                >
+                    ✏️ Edit
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+
+            <div style="margin-top: 20px;">
+
+                <button
+                    type="submit"
+                    class="danger-button"
+                >
+                    🗑️ Delete Selected
+                </button>
+
+            </div>
+
+        </form>
+
+    {% else %}
+
+        <p class="muted">
+            No question-bank questions yet.
+        </p>
+
+    {% endif %}
+
+<!-- QUESTION BANK PAGINATION -->
+
+{% if total_pages > 1 %}
+
+    <div style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #dbe3ef;
+    ">
+
+        {% if page > 1 %}
+
+            <a
+                class="button"
+                href="{{ url_for('admin', page=page-1, question_search=request.args.get('question_search', ''), question_exam=request.args.get('question_exam', ''), question_subject=request.args.get('question_subject', ''), question_year=request.args.get('question_year', ''), question_class=request.args.get('question_class', ''), question_topic=request.args.get('question_topic', '')) }}"
+            >
+                ← Previous
+            </a>
+
+        {% endif %}
+
+        <span>
+            Page <strong>{{ page }}</strong>
+            of <strong>{{ total_pages }}</strong>
+        </span>
+
+        {% if page < total_pages %}
+
+            <a
+                class="button"
+                href="{{ url_for('admin', page=page+1, question_search=request.args.get('question_search', ''), question_exam=request.args.get('question_exam', ''), question_subject=request.args.get('question_subject', ''), question_year=request.args.get('question_year', ''), question_class=request.args.get('question_class', ''), question_topic=request.args.get('question_topic', '')) }}"
+            >
+                Next →
+            </a>
+
+        {% endif %}
+
+    </div>
+
+{% endif %}
+
+<p class="muted" style="text-align: center; margin-top: 12px;">
+    Showing {{ questions|length }} questions on this page
+    out of {{ total_questions }} matching questions.
+</p>
+
+</div>
+
+
+<script>
+
+function toggleAllQuestions(selectAll) {
+
+    const checkboxes = document.querySelectorAll(
+        ".question-checkbox"
+    );
+
+    checkboxes.forEach(
+        checkbox => {
+            checkbox.checked = selectAll.checked;
+        }
+    );
+}
+
+
+function confirmBulkDelete() {
+
+    const selected = document.querySelectorAll(
+        ".question-checkbox:checked"
+    );
+
+    if (selected.length === 0) {
+
+        alert(
+            "Please select at least one question to delete."
+        );
+
+        return false;
+    }
+
+    return confirm(
+        `Are you sure you want to delete ${selected.length} question(s)?`
+    );
+}
+
+</script>
+
+{% endblock %}

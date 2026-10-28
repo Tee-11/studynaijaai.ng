@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="max-width: 900px; margin: 30px auto; padding: 20px;">
+
+    <div style="background: white; padding: 30px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.08);">
+        <h1>Quiz Results</h1>
+
+        <h2>{{ quiz_session.subject }} — {{ quiz_session.topic }}</h2>
+
+        <p>Class: {{ quiz_session.class_level }}</p>
+        <p>Difficulty: {{ quiz_session.difficulty }}</p>
+
+        <div style="margin: 25px 0;">
+            <h1 style="font-size: 42px; color: #2563eb;">
+                {{ score }} / {{ total_questions * 10 }}
+            </h1>
+
+            <p style="font-size: 22px;">
+                {{ percentage }}%
+            </p>
+
+            {% if percentage >= 80 %}
+                <h3 style="color: #16a34a;">Excellent work!</h3>
+                <p>You have demonstrated a strong understanding of this topic.</p>
+            {% elif percentage >= 60 %}
+                <h3 style="color: #2563eb;">Good effort!</h3>
+                <p>Keep practising to improve your understanding.</p>
+            {% elif percentage >= 40 %}
+                <h3 style="color: #d97706;">Keep improving!</h3>
+                <p>Review the explanations below and try again with another quiz.</p>
+            {% else %}
+                <h3 style="color: #dc2626;">More practice needed</h3>
+                <p>Don't give up. Study the topic and practise some more questions.</p>
+            {% endif %}
+        </div>
+
+        <a href="{{ url_for('quiz') }}"
+           style="display: inline-block; background: #2563eb; color: white; padding: 12px 22px; border-radius: 8px; text-decoration: none; margin: 5px;">
+            Back to Quizzes
+        </a>
+
+        <a href="{{ url_for('dashboard') }}"
+           style="display: inline-block; background: #374151; color: white; padding: 12px 22px; border-radius: 8px; text-decoration: none; margin: 5px;">
+            Dashboard
+        </a>
+    </div>
+
+    <h2 style="margin-top: 35px;">Review Your Answers</h2>
+
+    {% for question in questions %}
+        <div style="background: white; padding: 22px; border-radius: 12px; margin: 18px 0; border-left: 5px solid {% if question.is_correct %}#16a34a{% else %}#dc2626{% endif %}; box-shadow: 0 3px 10px rgba(0,0,0,0.05);">
+
+            <h3>Question {{ loop.index }}</h3>
+
+            <p style="font-size: 17px;">
+                <strong>{{ question.question }}</strong>
+            </p>
+
+            {% for letter, option in [
+                ('A', question.option_a),
+                ('B', question.option_b),
+                ('C', question.option_c),
+                ('D', question.option_d)
+            ] %}
+                <p style="padding: 9px; border-radius: 6px; background: {% if letter == question.answer %}#dcfce7{% elif letter == question.selected_answer and not question.is_correct %}#fee2e2{% else %}#f3f4f6{% endif %};">
+                    <strong>{{ letter }}.</strong> {{ option }}
+
+                    {% if letter == question.answer %}
+                        ✓ Correct answer
+                    {% elif letter == question.selected_answer %}
+                        — Your answer
+                    {% endif %}
+                </p>
+            {% endfor %}
+
+            {% if question.is_correct %}
+                <p style="color: #16a34a;"><strong>You got this question correct!</strong></p>
+            {% else %}
+                <p style="color: #dc2626;"><strong>Your answer was incorrect.</strong></p>
+            {% endif %}
+
+            {% if question.explanation %}
+                <div style="background: #eff6ff; padding: 12px; border-radius: 8px; margin-top: 12px;">
+                    <strong>Explanation:</strong>
+                    <p>{{ question.explanation }}</p>
+                </div>
+            {% endif %}
+
+        </div>
+    {% endfor %}
+
+</div>
+{% endblock %}
+

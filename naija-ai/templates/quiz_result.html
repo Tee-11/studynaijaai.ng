@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}
+Quiz Result
+{% endblock %}
+
+
+{% block content %}
+
+<div class="wide-card center">
+
+    <div class="big-icon">
+
+        {% if correct %}
+            🎉
+        {% else %}
+            📖
+        {% endif %}
+
+    </div>
+
+
+    {% if correct %}
+
+        <h1>
+            Correct! 🎉
+        </h1>
+
+        <p>
+            Excellent work! You earned
+            <strong>10 points</strong>.
+        </p>
+
+    {% else %}
+
+        <h1>
+            Not quite.
+        </h1>
+
+        <p>
+            Keep studying and try another question.
+        </p>
+
+    {% endif %}
+
+
+    {% if quiz.explanation %}
+
+        <div class="answer">
+
+            <h3>
+                Explanation
+            </h3>
+
+            <p>
+                {{ quiz.explanation }}
+            </p>
+
+        </div>
+
+    {% endif %}
+
+
+    <a
+        class="button"
+        href="{{ url_for('quiz') }}"
+    >
+        More Practice
+    </a>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}
+Exam Performance
+{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+
+    <h1>
+        📊 Exam Performance
+    </h1>
+
+    <p>
+        Track your exam results and see how you are improving.
+    </p>
+
+</div>
+
+
+<div class="grid three">
+
+    <div class="card">
+
+        <div class="icon">
+            📝
+        </div>
+
+        <h2>
+            {{ total_exams }}
+        </h2>
+
+        <p>
+            Exams Taken
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="icon">
+            🏆
+        </div>
+
+        <h2>
+            {{ best_score }}%
+        </h2>
+
+        <p>
+            Best Score
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="icon">
+            📈
+        </div>
+
+        <h2>
+            {{ average_score }}%
+        </h2>
+
+        <p>
+            Average Score
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="grid three">
+
+    <div class="card">
+
+        <div class="icon">
+            ❓
+        </div>
+
+        <h2>
+            {{ total_questions }}
+        </h2>
+
+        <p>
+            Questions Attempted
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="icon">
+            ✅
+        </div>
+
+        <h2>
+            {{ total_correct }}
+        </h2>
+
+        <p>
+            Correct Answers
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="icon">
+            ❌
+        </div>
+
+        <h2>
+            {{ total_wrong }}
+        </h2>
+
+        <p>
+            Wrong Answers
+        </p>
+
+    </div>
+
+</div>
+
+
+{% if subject_stats %}
+
+<div class="wide-card">
+
+    <h2>
+        📚 Subject Performance
+    </h2>
+
+    <p class="muted">
+        Your performance across different subjects.
+    </p>
+
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Subject
+                </th>
+
+                <th>
+                    Exams
+                </th>
+
+                <th>
+                    Average
+                </th>
+
+                <th>
+                    Best
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody>
+
+            {% for subject in subject_stats %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ subject.subject }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ subject.exam_count }}
+                    </td>
+
+                    <td>
+                        {{ "%.1f"|format(
+                            subject.average_score|float
+                        ) }}%
+                    </td>
+
+                    <td>
+                        {{ "%.1f"|format(
+                            subject.best_score|float
+                        ) }}%
+                    </td>
+
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endif %}
+
+
+<div class="wide-card">
+
+    <h2>
+        🕒 Recent Exams
+    </h2>
+
+    <p class="muted">
+        Your most recent completed exams.
+    </p>
+
+
+    {% if exams %}
+
+        <div class="exam-history-list">
+
+            {% for exam in exams %}
+
+                <div class="exam-history-item">
+
+                    <div class="exam-history-info">
+
+                        <span class="pill">
+                            {{ exam.exam }}
+                        </span>
+
+                        <h2>
+                            {{ exam.subject }}
+                        </h2>
+
+                        <p class="muted">
+
+                            {{ exam.correct_count }}
+                            correct out of
+                            {{ exam.total_questions }}
+
+                            ·
+
+                            {{ exam.wrong_count }}
+                            wrong
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="exam-history-score">
+
+                        <strong>
+                            {{ exam.score }}%
+                        </strong>
+
+                        <span>
+                            Score
+                        </span>
+
+                        <a
+                            class="button secondary"
+                            href="{{ url_for(
+                                'exam_result',
+                                session_id=exam.id
+                            ) }}"
+                        >
+                            View Result
+                        </a>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty">
+
+            <div class="big-icon">
+                📝
+            </div>
+
+            <h2>
+                No Exams Yet
+            </h2>
+
+            <p>
+                Complete an exam to start building your performance history.
+            </p>
+
+            <a
+                class="button"
+                href="{{ url_for('exam_start') }}"
+            >
+                Take Your First Exam
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Receipt - StudyNaija{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 750px; margin: 40px auto; padding: 20px;">
+
+    <div
+        style="
+            background: white;
+            padding: 35px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        "
+    >
+
+        <div style="text-align: center; margin-bottom: 30px;">
+
+            <h1 style="margin-bottom: 5px;">
+                StudyNaija
+            </h1>
+
+            <p style="color: #6b7280; margin-top: 0;">
+                Premium Payment Receipt
+            </p>
+
+        </div>
+
+        <div
+            style="
+                padding: 15px;
+                background: #ecfdf5;
+                border-radius: 10px;
+                text-align: center;
+                margin-bottom: 25px;
+            "
+        >
+
+            {% if payment["status"] == "success" %}
+
+                <h2 style="color: #15803d; margin: 0;">
+                    ✓ Payment Successful
+                </h2>
+
+            {% elif payment["status"] == "pending" %}
+
+                <h2 style="color: #b45309; margin: 0;">
+                    Payment Pending
+                </h2>
+
+            {% else %}
+
+                <h2 style="color: #b91c1c; margin: 0;">
+                    Payment Failed
+                </h2>
+
+            {% endif %}
+
+        </div>
+
+        <h3 style="margin-bottom: 15px;">
+            Student Information
+        </h3>
+
+        <div
+            style="
+                padding: 18px;
+                background: #f9fafb;
+                border-radius: 10px;
+                margin-bottom: 25px;
+            "
+        >
+
+            <p>
+                <strong>Name:</strong>
+                {{ user["name"] }}
+            </p>
+
+            <p>
+                <strong>Email:</strong>
+                {{ user["email"] }}
+            </p>
+
+        </div>
+
+        <h3 style="margin-bottom: 15px;">
+            Payment Information
+        </h3>
+
+        <div
+            style="
+                padding: 18px;
+                background: #f9fafb;
+                border-radius: 10px;
+            "
+        >
+
+            <p>
+                <strong>Payment Reference:</strong><br>
+                <span style="overflow-wrap: anywhere;">
+                    {{ payment["reference"] }}
+                </span>
+            </p>
+
+            <p>
+                <strong>Plan:</strong>
+                StudyNaija Premium
+            </p>
+
+            <p>
+                <strong>Amount:</strong>
+                {{ payment["currency"] }}
+                {{ "%.2f"|format(payment["amount"] / 100) }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                {{ payment["status"]|title }}
+            </p>
+
+            <p>
+                <strong>Payment Date:</strong>
+
+                {% if payment["paid_at"] %}
+                    {{ payment["paid_at"] }}
+                {% else %}
+                    {{ payment["created_at"] }}
+                {% endif %}
+
+            </p>
+
+        </div>
+
+        <div
+            style="
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #e5e7eb;
+                text-align: center;
+            "
+        >
+
+            <p style="color: #6b7280;">
+                Thank you for subscribing to StudyNaija Premium.
+            </p>
+
+        </div>
+
+        <div
+            style="
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                flex-wrap: wrap;
+                margin-top: 25px;
+            "
+        >
+
+            <button
+                onclick="window.print()"
+                style="
+                    padding: 12px 20px;
+                    border: none;
+                    border-radius: 8px;
+                    background: #2563eb;
+                    color: white;
+                    cursor: pointer;
+                    font-size: 15px;
+                "
+            >
+                🖨️ Print Receipt
+            </button>
+
+            <a
+                href="{{ url_for('payment_history') }}"
+                style="
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    background: #e5e7eb;
+                    color: #111827;
+                    text-decoration: none;
+                    font-size: 15px;
+                "
+            >
+                ← Payment History
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
