@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}Question Bank{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+    <h1>📝 Question Bank</h1>
+    <p>Practice WAEC, NECO and JAMB questions for {{ current_user.class_level }}.</p>
+</div>
+
+<div class="wide-card">
+
+    <form method="get" class="question-filter">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="filter-field">
+            <label for="search">Search</label>
+            <input
+                id="search"
+                type="text"
+                name="search"
+                value="{{ search }}"
+                placeholder="Search questions or topics..."
+            >
+        </div>
+
+        <div class="filter-field">
+            <label for="exam">Exam</label>
+
+            <select id="exam" name="exam">
+
+                <option value="">All Exams</option>
+
+                <option value="WAEC"
+                    {% if exam == "WAEC" %}selected{% endif %}>
+                    WAEC
+                </option>
+
+                <option value="NECO"
+                    {% if exam == "NECO" %}selected{% endif %}>
+                    NECO
+                </option>
+
+                <option value="JAMB"
+                    {% if exam == "JAMB" %}selected{% endif %}>
+                    JAMB
+                </option>
+
+            </select>
+        </div>
+
+        <div class="filter-field">
+            <label for="subject">Subject</label>
+
+            <select id="subject" name="subject">
+
+                <option value="">All Subjects</option>
+
+                {% for item in subjects %}
+
+                    <option value="{{ item }}"
+                        {% if subject == item %}selected{% endif %}>
+                        {{ item }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+        </div>
+
+        <div class="filter-field">
+            <label for="year">Year</label>
+
+            <select id="year" name="year">
+
+                <option value="">All Years</option>
+
+                {% for item in years %}
+
+                    <option value="{{ item }}"
+                        {% if year|string == item|string %}selected{% endif %}>
+                        {{ item }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+        </div>
+
+        <div class="question-filter-actions">
+
+            <button class="button" type="submit">
+                🔎 Search
+            </button>
+
+            <a
+                class="button secondary"
+                href="{{ url_for('question_bank') }}"
+            >
+                Clear
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<div class="grid three">
+
+    {% for question in questions %}
+
+        <a
+            class="card link-card"
+            href="{{ url_for('question_detail', question_id=question.id) }}"
+        >
+
+            <div>
+                <span class="pill">
+                    {{ question.exam }}
+                </span>
+
+                <span class="pill">
+                    {{ question.year }}
+                </span>
+            </div>
+
+            <h2>{{ question.subject }}</h2>
+
+            {% if question.topic %}
+                <p>📖 {{ question.topic }}</p>
+            {% endif %}
+
+            <p>
+                {{ question.question[:140] }}
+                {% if question.question|length > 140 %}...{% endif %}
+            </p>
+
+        </a>
+
+    {% else %}
+
+        <div class="empty">
+
+            <h2>No questions found</h2>
+
+            <p>
+                Try another exam, subject, year or search term.
+            </p>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}

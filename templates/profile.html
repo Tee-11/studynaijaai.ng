@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}
+My Profile
+{% endblock %}
+
+
+{% block content %}
+
+<div class="form-card">
+
+    <h1>
+        My Profile
+    </h1>
+
+
+    <p>
+        <b>Name:</b>
+        {{ user.name }}
+    </p>
+
+
+    <p>
+        <b>Email:</b>
+        {{ user.email }}
+    </p>
+
+
+    <p>
+        <b>Class:</b>
+        {{ user.class_level }}
+    </p>
+
+
+    <p>
+        <b>Points:</b>
+        {{ user.points }}
+    </p>
+
+</div>
+
+{% endblock %}

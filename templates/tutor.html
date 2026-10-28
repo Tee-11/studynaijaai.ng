@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}AI Tutor{% endblock %}
+
+{% block content %}
+
+<div class="wide-card">
+    <h1>🤖 StudyNaija AI Tutor</h1>
+
+    <p class="muted">
+        Learn difficult topics step by step, see worked examples,
+        practise questions, simplify explanations, or prepare for exams.
+        Your questions and answers are saved privately in your account.
+    </p>
+
+    <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label for="subject">Subject</label>
+
+        <select name="subject" id="subject">
+            {% for s in [
+                "Mathematics",
+                "Physics",
+                "Chemistry",
+                "Biology",
+                "Geography",
+                "Government",
+                "Economics",
+                "English Language",
+                "General"
+            ] %}
+                <option
+                    value="{{ s }}"
+                    {% if subject == s %}selected{% endif %}
+                >
+                    {{ s }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <label for="learning_mode">
+            How would you like to learn?
+        </label>
+
+        <select name="learning_mode" id="learning_mode">
+
+            <option
+                value="explain"
+                {% if learning_mode == "explain" %}selected{% endif %}
+            >
+                Explain step by step
+            </option>
+
+            <option
+                value="example"
+                {% if learning_mode == "example" %}selected{% endif %}
+            >
+                Show a worked example
+            </option>
+
+            <option
+                value="practice"
+                {% if learning_mode == "practice" %}selected{% endif %}
+            >
+                Give me practice questions
+            </option>
+
+            <option
+                value="simplify"
+                {% if learning_mode == "simplify" %}selected{% endif %}
+            >
+                Explain in simpler words
+            </option>
+
+            <option
+                value="exam"
+                {% if learning_mode == "exam" %}selected{% endif %}
+            >
+                Help me prepare for an exam
+            </option>
+
+        </select>
+
+        <label for="question">
+            Your Question or Topic
+        </label>
+
+        <textarea
+            id="question"
+            name="question"
+            placeholder="Example: Explain Newton's first law of motion, with an example."
+            required
+        >{{ question if answer is none else '' }}</textarea>
+
+        <button class="button" type="submit">
+            Help Me Learn
+        </button>
+
+    </form>
+</div>
+
+
+{% if answer %}
+
+<div class="wide-card">
+
+    <h2>📘 Your Explanation</h2>
+
+    <p class="muted">
+        {% if learning_mode == "example" %}
+            Worked example
+        {% elif learning_mode == "practice" %}
+            Practice questions
+        {% elif learning_mode == "simplify" %}
+            Simple explanation
+        {% elif learning_mode == "exam" %}
+            Exam preparation
+        {% else %}
+            Step-by-step explanation
+        {% endif %}
+    </p>
+
+    <div class="answer" style="white-space: pre-wrap;">{{ answer }}</div>
+
+</div>
+
+{% endif %}
+
+
+<div class="wide-card">
+
+    <h2>📚 Your Tutoring History</h2>
+
+    <p class="muted">
+        Your latest 30 questions and answers are saved privately
+        to your account.
+    </p>
+
+    {% if history %}
+
+        {% for item in history %}
+
+            {% if not (answer and loop.first and item.question == question) %}
+
+                <div class="answer" style="margin-top: 18px;">
+
+                    <p class="muted">
+                        {{ item.subject }}
+
+                        {% if item.created_at %}
+                            · {{ item.created_at }}
+                        {% endif %}
+                    </p>
+
+                    <h3>Your question</h3>
+
+                    <p style="white-space: pre-wrap;">{{ item.question }}</p>
+
+                    <h3>StudyNaija Tutor</h3>
+
+                    <p style="white-space: pre-wrap;">{{ item.answer }}</p>
+
+                </div>
+
+            {% endif %}
+
+        {% endfor %}
+
+    {% else %}
+
+        <p class="muted">
+            You haven't asked the tutor a question yet.
+            Your conversation will appear here.
+        </p>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

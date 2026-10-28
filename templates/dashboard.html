@@ -1,0 +1,518 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+
+{% block content %}
+
+<section class="page-head">
+
+    <h1>
+        Welcome, {{ current_user.name }} 👋
+    </h1>
+
+    <p>
+        {{ current_user.class_level }}
+        student ·
+        {{ current_user.points }}
+        points
+    </p>
+
+</section>
+
+{% if daily_bonus %}
+
+<div class="daily-bonus-notification">
+
+    <div class="daily-bonus-icon">
+        🎉
+    </div>
+
+    <div class="daily-bonus-content">
+
+        <h2>
+            Amazing! You completed today's challenges!
+        </h2>
+
+        <p>
+            You completed all of today's challenges and earned
+            <strong>+{{ daily_bonus.xp_reward }} XP</strong> bonus XP!
+        </p>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+<div class="wide-card xp-card">
+
+    <div class="xp-header">
+
+        <div>
+
+            <span class="pill">
+                Level {{ level_info.level }}
+            </span>
+
+            <h2>
+                {{ level_info.name }}
+            </h2>
+
+            <p class="muted">
+                ⭐ {{ level_info.xp }} XP
+            </p>
+
+        </div>
+
+        <div class="xp-level-icon">
+            🏆
+        </div>
+
+    </div>
+
+
+    <div class="xp-progress">
+
+        <div
+            class="xp-progress-bar"
+            style="width: {{ level_info.progress_percent }}%;"
+        ></div>
+
+    </div>
+
+
+    {% if level_info.next_xp %}
+
+        <p class="xp-progress-text">
+
+            {{ level_info.progress_xp }}
+            /
+            {{ level_info.required_xp }}
+            XP to Level {{ level_info.level + 1 }}
+
+        </p>
+
+    {% else %}
+
+        <p class="xp-progress-text">
+            🎉 Maximum level reached!
+        </p>
+
+    {% endif %}
+
+</div>
+
+<section class="daily-challenges-section">
+
+    <div class="daily-challenges-heading">
+
+        <div>
+            <h2>🎯 Today's Challenges</h2>
+
+            <p class="muted">
+                Complete today's challenges and earn extra XP!
+            </p>
+        </div>
+
+        <span class="pill">
+            Daily
+        </span>
+
+    </div>
+
+
+    <div class="daily-challenges-grid">
+
+        {% for challenge in daily_challenges %}
+
+            <div class="daily-challenge-card
+                {% if challenge.completed %}
+                    challenge-completed
+                {% endif %}
+            ">
+
+                <div class="daily-challenge-top">
+
+                    <div class="daily-challenge-icon">
+
+                        {% if challenge.challenge_type == "note" %}
+                            📚
+                        {% elif challenge.challenge_type == "quiz" %}
+                            🧠
+                        {% elif challenge.challenge_type == "exam" %}
+                            📝
+                        {% else %}
+                            🔥
+                        {% endif %}
+
+                    </div>
+
+                    <span class="challenge-xp">
+                        +{{ challenge.xp_reward }} XP
+                    </span>
+
+                </div>
+
+
+                <h3>
+                    {{ challenge.title }}
+                </h3>
+
+                <p class="muted">
+                    {{ challenge.description }}
+                </p>
+
+
+                <div class="challenge-progress-info">
+
+                    <span>
+                        Progress
+                    </span>
+
+                    <strong>
+                        {{ challenge.progress }}
+                        /
+                        {{ challenge.target }}
+                    </strong>
+
+                </div>
+
+
+                <div class="challenge-progress">
+
+                    <div
+                        class="challenge-progress-bar"
+                        style="
+                            width:
+                            {{
+                                (
+                                    (challenge.progress / challenge.target) * 100
+                                )
+                                if challenge.target > 0
+                                else 0
+                            }}%;
+                        "
+                    ></div>
+
+                </div>
+
+
+                {% if challenge.completed %}
+
+                    <div class="challenge-complete">
+                        ✓ Completed
+                    </div>
+
+                {% else %}
+
+                    <div class="challenge-incomplete">
+                        Keep going!
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+        {% else %}
+
+            <div class="no-daily-challenges">
+
+                <div>🎯</div>
+
+                <h3>
+                    No challenges available
+                </h3>
+
+                <p class="muted">
+                    Check back later for today's challenges.
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+<div class="wide-card badges-card">
+
+    <div class="badges-heading">
+        <div>
+            <h2>🏅 Your Badges</h2>
+            <p class="muted">
+                Celebrate your learning achievements!
+            </p>
+        </div>
+
+        <span class="pill">
+            {{ earned_badges|length }} Earned
+        </span>
+    </div>
+
+    {% if earned_badges %}
+
+        <div class="badges-grid">
+
+            {% for badge in earned_badges %}
+
+                <div class="badge-item">
+
+                    <div class="badge-icon">
+                        {{ badge.badge_icon }}
+                    </div>
+
+                    <h3>
+                        {{ badge.badge_name }}
+                    </h3>
+
+                    <p>
+                        {{ badge.description }}
+                    </p>
+
+                    <span class="badge-status">
+                        ✓ Unlocked
+                    </span>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="no-badges">
+            <div class="no-badges-icon">🎯</div>
+
+            <h3>Your journey starts here!</h3>
+
+            <p class="muted">
+                Complete exams and achieve high scores
+                to unlock your first badge.
+            </p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+<section class="streak-section">
+
+    <div class="streak-heading">
+        <h2>🔥 Your Study Streak</h2>
+        <p>Keep learning every day to build your streak!</p>
+    </div>
+
+    <div class="streak-cards">
+
+        <div class="streak-card current-streak">
+            <div class="streak-icon">🔥</div>
+            <div>
+                <p>Current Streak</p>
+                <h3>{{ streaks.current_streak }} days</h3>
+            </div>
+        </div>
+
+        <div class="streak-card longest-streak">
+            <div class="streak-icon">🏆</div>
+            <div>
+                <p>Longest Streak</p>
+                <h3>{{ streaks.longest_streak }} days</h3>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="activity-calendar">
+
+        <h3>📅 Recent Study Activity</h3>
+
+        <p class="calendar-description">
+            Your most recent recorded study days.
+        </p>
+
+        {% if study_dates %}
+
+            <div class="activity-list">
+
+                {% for activity in study_dates %}
+
+                    <div class="activity-day">
+                        <div class="activity-status">✓</div>
+
+                        <div class="activity-details">
+                            <strong>{{ activity.date }}</strong>
+                            <span>
+                                {{ activity.activities }}
+                                recorded activities
+                            </span>
+                        </div>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <p class="empty-activity">
+                No study activity recorded yet.
+                Open a lesson, complete a quiz, or submit an exam to begin!
+            </p>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+
+
+
+<section class="grid four">
+
+
+    <a
+        class="card link-card"
+        href="{{ url_for('tutor') }}"
+    >
+
+        <div class="icon">
+            🤖
+        </div>
+
+        <h2>
+            AI Tutor
+        </h2>
+
+        <p>
+            Ask a study question.
+        </p>
+
+    </a>
+
+
+    <a
+        class="card link-card"
+        href="{{ url_for('notes') }}"
+    >
+
+        <div class="icon">
+            📚
+        </div>
+
+        <h2>
+            Lesson Notes
+        </h2>
+
+        <p>
+            Read your class notes.
+        </p>
+
+    </a>
+
+
+    <a
+        class="card link-card"
+        href="{{ url_for('quiz') }}"
+    >
+
+        <div class="icon">
+            📝
+        </div>
+
+        <h2>
+            Practice
+        </h2>
+
+        <p>
+            Test your knowledge.
+        </p>
+
+    </a>
+
+
+    <a
+        class="card link-card"
+        href="{{ url_for('exam_start') }}"
+    >
+
+        <div class="icon">
+            📋
+        </div>
+
+        <h2>
+            Exams
+        </h2>
+
+        <p>
+            Take timed WAEC, NECO and JAMB exams.
+        </p>
+
+    </a>
+
+
+    <a
+        class="card link-card"
+        href="{{ url_for('challenges') }}"
+    >
+
+        <div class="icon">
+            🏆
+        </div>
+
+        <h2>
+            Challenges
+        </h2>
+
+        <p>
+            See the leaderboard.
+        </p>
+
+    </a>
+
+    <a
+        class="card link-card"
+        href="{{ url_for('challenge_history') }}"
+    >
+
+        <div class="icon">
+            📜
+        </div>
+
+        <h2>
+            Challenge History
+        </h2>
+
+        <p>
+            View your past challenges and bonus XP.
+        </p>
+
+    </a>
+
+    <a
+        class="card link-card"
+        href="{{ url_for('exam_history') }}"
+    >
+        <div class="icon">
+            📊
+        </div>
+
+        <h2>
+            Exam History
+        </h2>
+
+        <p>
+            View your previous exams and track your scores.
+        </p>
+    </a>
+
+
+</section>
+
+{% endblock %}

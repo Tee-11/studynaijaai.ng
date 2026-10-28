@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}StudyNaija{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header class="topbar">
+
+    <a class="brand" href="{{ url_for('home') }}">
+        StudyNaija
+    </a>
+
+    <nav>
+
+        {% if current_user %}
+
+            <a href="{{ url_for('dashboard') }}">
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('tutor') }}">
+                AI Tutor
+            </a>
+
+            <a href="{{ url_for('notes') }}">
+                Notes
+            </a>
+
+            <a href="{{ url_for('quiz') }}">
+                Practice
+            </a>
+
+            <a href="{{ url_for('challenges') }}">
+                Challenges
+            </a>
+
+            <a href="{{ url_for('profile') }}">
+                Profile
+            </a>
+
+            <a href="{{ url_for('premium') }}">⭐ Premium</a>
+
+            {% if current_user.role == 'admin' %}
+
+                <a href="{{ url_for('admin') }}">
+                    Admin
+                </a>
+
+            {% endif %}
+
+            <a class="nav-button"
+               href="{{ url_for('logout') }}">
+                Logout
+            </a>
+
+        {% else %}
+
+            <a href="{{ url_for('login') }}">
+                Login
+            </a>
+
+            <a class="nav-button"
+               href="{{ url_for('register') }}">
+                Create account
+            </a>
+
+        {% endif %}
+
+    </nav>
+
+</header>
+
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% if messages %}
+
+        <div class="messages">
+
+            {% for category, message in messages %}
+
+                <div class="message {{ category }}">
+                    {{ message }}
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% endif %}
+
+{% endwith %}
+
+
+<main>
+
+    {% block content %}
+
+    {% endblock %}
+
+</main>
+
+
+<footer>
+
+    © 2026 StudyNaija
+
+</footer>
+
+</body>
+</html>

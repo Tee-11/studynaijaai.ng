@@ -1,0 +1,495 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ exam_session.exam }} {{ exam_session.subject }} Exam
+{% endblock %}
+
+{% block content %}
+
+<div class="exam-page">
+
+    <div class="wide-card exam-top">
+
+        <div>
+            <span class="pill">
+                {{ exam_session.exam }}
+            </span>
+
+            <h1>
+                {{ exam_session.subject }}
+            </h1>
+
+            <p class="muted">
+                {{ exam_session.class_level }}
+                ·
+                {{ exam_session.total_questions }}
+                Questions
+            </p>
+        </div>
+
+        <div class="exam-timer-box">
+
+            <span>
+                Time Remaining
+            </span>
+
+            <strong id="exam-timer">
+                00:00
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="exam-layout">
+
+        <main class="exam-main">
+
+            <form
+                method="post"
+                action="{{ url_for(
+                    'submit_exam',
+                    session_id=exam_session.id
+                ) }}"
+                id="exam-form"
+            >
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {% for question in questions %}
+
+                    <div
+                        class="wide-card exam-question"
+                        id="question-{{ loop.index }}"
+                        data-question="{{ loop.index }}"
+                        {% if not loop.first %}
+                            style="display: none;"
+                        {% endif %}
+                    >
+
+                        <div class="question-top">
+
+                            <span class="question-number">
+                                Question {{ loop.index }}
+                                of {{ questions|length }}
+                            </span>
+
+                        </div>
+
+
+                        <h2>
+                            {{ question.question }}
+                        </h2>
+
+
+                        <div class="exam-options">
+
+                            <label class="exam-option">
+
+                                <input
+                                    type="radio"
+                                    name="question_{{ question.session_question_id }}"
+                                    value="A"
+                                >
+
+                                <span>
+                                    <strong>A.</strong>
+                                    {{ question.option_a }}
+                                </span>
+
+                            </label>
+
+
+                            <label class="exam-option">
+
+                                <input
+                                    type="radio"
+                                    name="question_{{ question.session_question_id }}"
+                                    value="B"
+                                >
+
+                                <span>
+                                    <strong>B.</strong>
+                                    {{ question.option_b }}
+                                </span>
+
+                            </label>
+
+
+                            <label class="exam-option">
+
+                                <input
+                                    type="radio"
+                                    name="question_{{ question.session_question_id }}"
+                                    value="C"
+                                >
+
+                                <span>
+                                    <strong>C.</strong>
+                                    {{ question.option_c }}
+                                </span>
+
+                            </label>
+
+
+                            <label class="exam-option">
+
+                                <input
+                                    type="radio"
+                                    name="question_{{ question.session_question_id }}"
+                                    value="D"
+                                >
+
+                                <span>
+                                    <strong>D.</strong>
+                                    {{ question.option_d }}
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <div class="exam-navigation">
+
+                            <button
+                                type="button"
+                                class="button secondary"
+                                id="previous-button"
+                                onclick="previousQuestion()"
+                            >
+                                ← Previous
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="button"
+                                id="next-button"
+                                onclick="nextQuestion()"
+                            >
+                                Next →
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+
+                <div class="wide-card exam-submit-card">
+
+                    <button
+                        class="button exam-submit-button"
+                        type="submit"
+                        onclick="return confirm('Are you sure you want to submit this exam?');"
+                    >
+                        Submit Exam
+                    </button>
+
+                </div>
+
+            </form>
+
+        </main>
+
+
+        <aside class="wide-card exam-sidebar">
+
+            <h2>
+                Questions
+            </h2>
+
+            <p class="muted">
+                Click a number to jump to a question.
+            </p>
+
+
+            <div class="question-navigator">
+
+                {% for question in questions %}
+
+                    <button
+                        type="button"
+                        class="question-number-button {% if loop.first %}active{% endif %}"
+                        id="nav-{{ loop.index }}"
+                        onclick="showQuestion({{ loop.index }})"
+                    >
+                        {{ loop.index }}
+                    </button>
+
+                {% endfor %}
+
+            </div>
+
+        </aside>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let currentQuestion = 1;
+
+const totalQuestions =
+    {{ questions|length }};
+
+let remainingSeconds =
+    {{ remaining_seconds }};
+
+const timer =
+    document.getElementById("exam-timer");
+
+const examForm =
+    document.getElementById("exam-form");
+
+
+function showQuestion(number) {
+
+    if (
+        number < 1
+        || number > totalQuestions
+    ) {
+        return;
+    }
+
+
+    document
+        .querySelectorAll(".exam-question")
+        .forEach(function(question) {
+
+            question.style.display = "none";
+
+        });
+
+
+    const selectedQuestion =
+        document.getElementById(
+            "question-" + number
+        );
+
+
+    if (selectedQuestion) {
+
+        selectedQuestion.style.display =
+            "block";
+
+    }
+
+
+    document
+        .querySelectorAll(
+            ".question-number-button"
+        )
+        .forEach(function(button) {
+
+            button.classList.remove(
+                "active"
+            );
+
+        });
+
+
+    const selectedButton =
+        document.getElementById(
+            "nav-" + number
+        );
+
+
+    if (selectedButton) {
+
+        selectedButton.classList.add(
+            "active"
+        );
+
+    }
+
+
+    currentQuestion = number;
+
+
+    const previousButton =
+        document.getElementById(
+            "previous-button"
+        );
+
+    const nextButton =
+        document.getElementById(
+            "next-button"
+        );
+
+
+    previousButton.style.visibility =
+        number === 1
+            ? "hidden"
+            : "visible";
+
+
+    nextButton.style.display =
+        number === totalQuestions
+            ? "none"
+            : "inline-block";
+
+}
+
+
+function nextQuestion() {
+
+    if (
+        currentQuestion < totalQuestions
+    ) {
+
+        showQuestion(
+            currentQuestion + 1
+        );
+
+    }
+
+}
+
+
+function previousQuestion() {
+
+    if (
+        currentQuestion > 1
+    ) {
+
+        showQuestion(
+            currentQuestion - 1
+        );
+
+    }
+
+}
+
+
+function updateAnsweredButtons() {
+
+    document
+        .querySelectorAll(
+            ".exam-question"
+        )
+        .forEach(function(question) {
+
+            const radios =
+                question.querySelectorAll(
+                    "input[type='radio']"
+                );
+
+            let answered = false;
+
+            radios.forEach(function(radio) {
+
+                if (radio.checked) {
+
+                    answered = true;
+
+                }
+
+            });
+
+
+            const number =
+                question.dataset.question;
+
+            const button =
+                document.getElementById(
+                    "nav-" + number
+                );
+
+
+            if (answered) {
+
+                button.classList.add(
+                    "answered"
+                );
+
+            } else {
+
+                button.classList.remove(
+                    "answered"
+                );
+
+            }
+
+        });
+
+}
+
+
+document
+    .querySelectorAll(
+        ".exam-option input"
+    )
+    .forEach(function(radio) {
+
+        radio.addEventListener(
+            "change",
+            updateAnsweredButtons
+        );
+
+    });
+
+
+function updateTimer() {
+
+    const minutes =
+        Math.floor(
+            remainingSeconds / 60
+        );
+
+    const seconds =
+        remainingSeconds % 60;
+
+
+    timer.textContent =
+        String(minutes).padStart(2, "0")
+        + ":"
+        + String(seconds).padStart(2, "0");
+
+
+    if (
+        remainingSeconds <= 60
+    ) {
+
+        timer.classList.add(
+            "timer-warning"
+        );
+
+    }
+
+
+    if (
+        remainingSeconds <= 0
+    ) {
+
+        clearInterval(timerInterval);
+
+        examForm.submit();
+
+        return;
+
+    }
+
+
+    remainingSeconds--;
+
+}
+
+
+showQuestion(1);
+
+updateTimer();
+
+
+const timerInterval =
+    setInterval(
+        updateTimer,
+        1000
+    );
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}
+AI Quiz Statistics
+{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+
+    <h1>
+        📊 My AI Quiz Statistics
+    </h1>
+
+    <p>
+        Track your progress and see how you are improving.
+    </p>
+
+</div>
+
+
+<div class="grid two">
+
+    <div class="card">
+        <h2>🧠 Quizzes Created</h2>
+
+        <p style="
+            font-size: 40px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #2563eb;
+        ">
+            {{ summary.total_quizzes }}
+        </p>
+
+        <p>
+            Total AI quizzes created
+        </p>
+    </div>
+
+
+    <div class="card">
+        <h2>✅ Quizzes Completed</h2>
+
+        <p style="
+            font-size: 40px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #16a34a;
+        ">
+            {{ summary.completed_quizzes }}
+        </p>
+
+        <p>
+            Quizzes you have finished
+        </p>
+    </div>
+
+
+    <div class="card">
+        <h2>🎯 Average Score</h2>
+
+        <p style="
+            font-size: 40px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #2563eb;
+        ">
+            {{ average_score }}%
+        </p>
+
+        <p>
+            Your average performance
+        </p>
+    </div>
+
+
+    <div class="card">
+        <h2>🏆 Best Score</h2>
+
+        <p style="
+            font-size: 40px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #d97706;
+        ">
+            {{ best_score }}%
+        </p>
+
+        <p>
+            Your highest quiz percentage
+        </p>
+    </div>
+
+</div>
+
+
+<div class="card" style="margin-top: 25px;">
+
+    <h2>📚 Favourite Subject</h2>
+
+    {% if favourite_subject %}
+
+        <p style="
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        ">
+            {{ favourite_subject.subject }}
+        </p>
+
+        <p>
+            {{ favourite_subject.quiz_count }} completed quiz{{ 'es' if favourite_subject.quiz_count != 1 else '' }}
+        </p>
+
+    {% else %}
+
+        <p>
+            Complete some AI quizzes to discover your favourite subject.
+        </p>
+
+    {% endif %}
+
+</div>
+
+
+<div class="card" style="margin-top: 25px;">
+
+    <h2>🕒 Recent Quizzes</h2>
+
+    {% if recent_quizzes %}
+
+        {% for quiz in recent_quizzes %}
+
+            {% set maximum_score = quiz.total_questions * 10 %}
+            {% set percentage = ((quiz.score / maximum_score) * 100)|round|int if maximum_score else 0 %}
+
+            <div style="
+                padding: 15px 0;
+                border-bottom: 1px solid #e5e7eb;
+            ">
+
+                <strong>
+                    {{ quiz.subject }}
+                </strong>
+
+                <p style="margin: 4px 0;">
+                    {{ quiz.topic }}
+                </p>
+
+                <span class="pill">
+                    {{ percentage }}%
+                </span>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>
+            No completed AI quizzes yet.
+        </p>
+
+    {% endif %}
+
+</div>
+
+
+<div style="
+    margin-top: 25px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+">
+
+    <a
+        href="{{ url_for('ai_quiz_history') }}"
+        style="
+            background: #374151;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        "
+    >
+        📚 Quiz History
+    </a>
+
+
+    <a
+        href="{{ url_for('quiz') }}"
+        style="
+            background: #2563eb;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+        "
+    >
+        🤖 Create AI Quiz
+    </a>
+
+</div>
+
+{% endblock %}
+

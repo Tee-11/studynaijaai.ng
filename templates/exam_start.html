@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}
+Start Exam
+{% endblock %}
+
+{% block content %}
+
+<div class="wide-card">
+
+    <h1>
+        📝 Start Exam
+    </h1>
+
+    <p class="muted">
+        Choose your exam settings before you begin.
+    </p>
+
+    <form
+        method="post"
+        action="{{ url_for('start_exam') }}"
+    >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>
+            Exam
+        </label>
+
+        <select name="exam" required>
+
+            <option value="">
+                Select Exam
+            </option>
+
+            <option value="WAEC">
+                WAEC
+            </option>
+
+            <option value="NECO">
+                NECO
+            </option>
+
+            <option value="JAMB">
+                JAMB
+            </option>
+
+        </select>
+
+
+        <label>
+            Subject
+        </label>
+
+        <select name="subject" required>
+
+            <option value="">
+                Select Subject
+            </option>
+
+            {% for item in subjects %}
+
+                <option value="{{ item }}">
+                    {{ item }}
+                </option>
+
+            {% endfor %}
+
+        </select>
+
+
+        <label>
+            Number of Questions
+        </label>
+
+        <select name="number_of_questions" required>
+
+            <option value="10">
+                10 Questions
+            </option>
+
+            <option value="20">
+                20 Questions
+            </option>
+
+            <option value="30">
+                30 Questions
+            </option>
+
+            <option value="50">
+                50 Questions
+            </option>
+
+        </select>
+
+
+        <label>
+            Exam Duration
+        </label>
+
+        <select name="duration" required>
+
+            <option value="600">
+                10 Minutes
+            </option>
+
+            <option value="1200">
+                20 Minutes
+            </option>
+
+            <option value="1800" selected>
+                30 Minutes
+            </option>
+
+            <option value="3600">
+                60 Minutes
+            </option>
+
+        </select>
+
+
+        <button
+            class="button"
+            type="submit"
+        >
+            ▶ Start Exam
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

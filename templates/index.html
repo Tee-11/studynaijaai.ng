@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}
+StudyNaija - Learn Smarter
+{% endblock %}
+
+
+{% block content %}
+
+<section class="hero">
+
+    <div class="hero-badge">
+        Built for Nigerian students
+    </div>
+
+
+    <h1>
+        Learn Smarter with
+        <span>StudyNaija</span>
+    </h1>
+
+
+    <p>
+        Your study companion for lesson notes,
+        practice questions, challenges and
+        AI-powered learning.
+    </p>
+
+
+    <div class="hero-actions">
+
+        <a class="button"
+           href="{{ url_for('register') }}">
+            Get Started
+        </a>
+
+
+        <a class="button secondary"
+           href="{{ url_for('login') }}">
+            Login
+        </a>
+
+    </div>
+
+</section>
+
+
+<section class="grid four">
+
+    <div class="card">
+
+        <div class="icon">
+            🤖
+        </div>
+
+        <h2>
+            AI Tutor
+        </h2>
+
+        <p>
+            Ask questions and receive
+            simple step-by-step explanations.
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="icon">
+            📚
+        </div>
+
+        <h2>
+            Lesson Notes
+        </h2>
+
+        <p>
+            Study notes organised by
+            class and subject.
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="icon">
+            📝
+        </div>
+
+        <h2>
+            Practice
+        </h2>
+
+        <p>
+            Answer questions and earn
+            points as you learn.
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="icon">
+            🏆
+        </div>
+
+        <h2>
+            Challenges
+        </h2>
+
+        <p>
+            Climb the leaderboard and
+            challenge yourself.
+        </p>
+
+    </div>
+
+</section>
+
+{% endblock %}
