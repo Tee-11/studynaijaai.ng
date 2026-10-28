@@ -1,6 +1,6 @@
 Flask
 gunicorn
-requestsopenai
+requests
 psycopg2-binary
 Flask-WTF
 Flask-Limiter
