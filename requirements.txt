@@ -1,2 +1,7 @@
 Flask
 gunicorn
+requestsopenai
+psycopg2-binary
+Flask-WTF
+Flask-Limiter
+openai
