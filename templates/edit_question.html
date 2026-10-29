@@ -22,193 +22,59 @@
             value="{{ csrf_token() }}"
         >
 
+        <input
+            type="hidden"
+            name="class_level"
+            value="ALL"
+        >
+
         <label>
             Exam
         </label>
 
         <select name="exam" required>
-
-            <option
-                value="WAEC"
-                {% if question.exam == "WAEC" %}selected{% endif %}
-            >
-                WAEC
-            </option>
-
-            <option
-                value="NECO"
-                {% if question.exam == "NECO" %}selected{% endif %}
-            >
-                NECO
-            </option>
-
-            <option
-                value="JAMB"
-                {% if question.exam == "JAMB" %}selected{% endif %}
-            >
-                JAMB
-            </option>
-
+            <option value="WAEC" {% if question.exam == "WAEC" %}selected{% endif %}>WAEC</option>
+            <option value="NECO" {% if question.exam == "NECO" %}selected{% endif %}>NECO</option>
+            <option value="JAMB" {% if question.exam == "JAMB" %}selected{% endif %}>JAMB</option>
         </select>
 
+        <label>Year</label>
+        <input type="number" name="year" value="{{ question.year }}" required>
 
-        <label>
-            Year
-        </label>
+        <label>Subject</label>
+        <input type="text" name="subject" value="{{ question.subject }}" required>
 
-        <input
-            type="number"
-            name="year"
-            value="{{ question.year }}"
-            required
-        >
+        <label>Topic</label>
+        <input type="text" name="topic" value="{{ question.topic or '' }}">
 
+        <label>Question</label>
+        <textarea name="question" required>{{ question.question }}</textarea>
 
-        <label>
-            Subject
-        </label>
+        <label>Option A</label>
+        <input type="text" name="option_a" value="{{ question.option_a }}" required>
 
-        <input
-            type="text"
-            name="subject"
-            value="{{ question.subject }}"
-            required
-        >
+        <label>Option B</label>
+        <input type="text" name="option_b" value="{{ question.option_b }}" required>
 
+        <label>Option C</label>
+        <input type="text" name="option_c" value="{{ question.option_c }}" required>
 
-        <label>
-            Class Level
-        </label>
+        <label>Option D</label>
+        <input type="text" name="option_d" value="{{ question.option_d }}" required>
 
-        <input
-            type="text"
-            name="class_level"
-            value="{{ question.class_level }}"
-            required
-        >
-
-
-        <label>
-            Topic
-        </label>
-
-        <input
-            type="text"
-            name="topic"
-            value="{{ question.topic or '' }}"
-        >
-
-
-        <label>
-            Question
-        </label>
-
-        <textarea
-            name="question"
-            required
-        >{{ question.question }}</textarea>
-
-
-        <label>
-            Option A
-        </label>
-
-        <input
-            type="text"
-            name="option_a"
-            value="{{ question.option_a }}"
-            required
-        >
-
-
-        <label>
-            Option B
-        </label>
-
-        <input
-            type="text"
-            name="option_b"
-            value="{{ question.option_b }}"
-            required
-        >
-
-
-        <label>
-            Option C
-        </label>
-
-        <input
-            type="text"
-            name="option_c"
-            value="{{ question.option_c }}"
-            required
-        >
-
-
-        <label>
-            Option D
-        </label>
-
-        <input
-            type="text"
-            name="option_d"
-            value="{{ question.option_d }}"
-            required
-        >
-
-
-        <label>
-            Correct Answer
-        </label>
-
+        <label>Correct Answer</label>
         <select name="answer" required>
-
-            <option
-                value="A"
-                {% if question.answer == "A" %}selected{% endif %}
-            >
-                A
-            </option>
-
-            <option
-                value="B"
-                {% if question.answer == "B" %}selected{% endif %}
-            >
-                B
-            </option>
-
-            <option
-                value="C"
-                {% if question.answer == "C" %}selected{% endif %}
-            >
-                C
-            </option>
-
-            <option
-                value="D"
-                {% if question.answer == "D" %}selected{% endif %}
-            >
-                D
-            </option>
-
+            <option value="A" {% if question.answer == "A" %}selected{% endif %}>A</option>
+            <option value="B" {% if question.answer == "B" %}selected{% endif %}>B</option>
+            <option value="C" {% if question.answer == "C" %}selected{% endif %}>C</option>
+            <option value="D" {% if question.answer == "D" %}selected{% endif %}>D</option>
         </select>
 
-
-        <label>
-            Explanation
-        </label>
-
-        <textarea
-            name="explanation"
-        >{{ question.explanation or '' }}</textarea>
-
+        <label>Explanation</label>
+        <textarea name="explanation">{{ question.explanation or '' }}</textarea>
 
         <div style="margin-top: 25px;">
-
-            <button
-                type="submit"
-                class="button"
-            >
+            <button type="submit" class="button">
                 💾 Save Changes
             </button>
 
@@ -219,7 +85,6 @@
             >
                 Cancel
             </a>
-
         </div>
 
     </form>
