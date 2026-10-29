@@ -1914,6 +1914,9 @@ def login():
                 "success"
             )
 
+            if user["role"] == "admin":
+                return redirect(url_for("admin"))
+                
             return redirect(
                 url_for("dashboard")
             )
