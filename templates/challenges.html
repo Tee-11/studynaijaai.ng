@@ -4,7 +4,6 @@
 Challenges
 {% endblock %}
 
-
 {% block content %}
 
 <div class="page-head">
@@ -19,7 +18,6 @@ Challenges
 
 </div>
 
-
 <div class="wide-card">
 
     <table>
@@ -27,62 +25,27 @@ Challenges
         <thead>
 
             <tr>
-
-                <th>
-                    #
-                </th>
-
-                <th>
-                    Student
-                </th>
-
-                <th>
-                    Class
-                </th>
-
-                <th>
-                    Points
-                </th>
-
+                <th>#</th>
+                <th>Student</th>
+                <th>Points</th>
             </tr>
 
         </thead>
-
 
         <tbody>
 
             {% for user in leaders %}
 
                 <tr>
-
-                    <td>
-                        {{ loop.index }}
-                    </td>
-
-                    <td>
-                        {{ user.name }}
-                    </td>
-
-                    <td>
-                        {{ user.class_level }}
-                    </td>
-
-                    <td>
-                        <b>
-                            {{ user.points }}
-                        </b>
-                    </td>
-
+                    <td>{{ loop.index }}</td>
+                    <td>{{ user.name }}</td>
+                    <td><b>{{ user.points }}</b></td>
                 </tr>
 
             {% else %}
 
                 <tr>
-
-                    <td colspan="4">
-                        No students yet.
-                    </td>
-
+                    <td colspan="3">No students yet.</td>
                 </tr>
 
             {% endfor %}
