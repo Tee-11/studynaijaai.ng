@@ -81,5 +81,91 @@
 
 </footer>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    if (!window.location.pathname.startsWith("/admin")) {
+        return;
+    }
+
+    const cards = document.querySelectorAll(".wide-card");
+    let practiceCard = null;
+
+    cards.forEach(function (card) {
+        const heading = card.querySelector("h2");
+
+        if (
+            heading &&
+            heading.textContent.trim().includes("Add Practice Question")
+        ) {
+            practiceCard = card;
+        }
+    });
+
+    if (!practiceCard || document.getElementById("practice-csv-import")) {
+        return;
+    }
+
+    const card = document.createElement("div");
+    card.className = "wide-card";
+    card.id = "practice-csv-import";
+
+    card.innerHTML = `
+        <h2>📥 Import Practice Questions from CSV</h2>
+
+        <p class="muted">
+            Upload many practice questions at once using a CSV file.
+            The questions will be added to the normal Practice Questions section.
+        </p>
+
+        <form
+            method="post"
+            action="/admin/quiz/import"
+            enctype="multipart/form-data"
+        >
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="${getCsrfToken()}"
+            >
+
+            <label>Choose CSV File</label>
+
+            <input
+                type="file"
+                name="csv_file"
+                accept=".csv,text/csv"
+                required
+            >
+
+            <p class="muted" style="margin-top: 10px;">
+                Required columns:
+                title, subject, class_level, question,
+                option_a, option_b, option_c, option_d,
+                answer, explanation
+            </p>
+
+            <p class="muted">
+                The answer column must contain A, B, C, or D.
+            </p>
+
+            <button
+                type="submit"
+                class="button"
+                style="margin-top: 15px;"
+            >
+                📤 Upload Practice Questions
+            </button>
+        </form>
+    `;
+
+    practiceCard.insertAdjacentElement("afterend", card);
+});
+
+function getCsrfToken() {
+    const token = document.querySelector('input[name="csrf_token"]');
+    return token ? token.value : "";
+}
+</script>
+
 </body>
 </html>
