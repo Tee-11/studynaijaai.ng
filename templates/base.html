@@ -22,40 +22,6 @@
 
         {% if current_user %}
 
-            <a href="{{ url_for('dashboard') }}">
-                Dashboard
-            </a>
-
-            <a href="{{ url_for('tutor') }}">
-                AI Tutor
-            </a>
-
-            <a href="{{ url_for('notes') }}">
-                Notes
-            </a>
-
-            <a href="{{ url_for('quiz') }}">
-                Practice
-            </a>
-
-            <a href="{{ url_for('challenges') }}">
-                Challenges
-            </a>
-
-            <a href="{{ url_for('profile') }}">
-                Profile
-            </a>
-
-            <a href="{{ url_for('premium') }}">⭐ Premium</a>
-
-            {% if current_user.role == 'admin' %}
-
-                <a href="{{ url_for('admin') }}">
-                    Admin
-                </a>
-
-            {% endif %}
-
             <a class="nav-button"
                href="{{ url_for('logout') }}">
                 Logout
