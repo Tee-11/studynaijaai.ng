@@ -83,10 +83,22 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    if (!window.location.pathname.startsWith("/admin")) {
-        return;
+    const path = window.location.pathname;
+
+    if (path.startsWith("/admin")) {
+        addPracticeCsvImporter();
+        removeAdminClassFields();
     }
 
+    removePortalClassText();
+});
+
+function getCsrfToken() {
+    const token = document.querySelector('input[name="csrf_token"]');
+    return token ? token.value : "";
+}
+
+function addPracticeCsvImporter() {
     const cards = document.querySelectorAll(".wide-card");
     let practiceCard = null;
 
@@ -139,9 +151,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             <p class="muted" style="margin-top: 10px;">
                 Required columns:
-                title, subject, class_level, question,
-                option_a, option_b, option_c, option_d,
-                answer, explanation
+                title, subject, question, option_a, option_b,
+                option_c, option_d, answer, explanation
             </p>
 
             <p class="muted">
@@ -159,11 +170,86 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
 
     practiceCard.insertAdjacentElement("afterend", card);
-});
+}
 
-function getCsrfToken() {
-    const token = document.querySelector('input[name="csrf_token"]');
-    return token ? token.value : "";
+function removeAdminClassFields() {
+    const noteForm = document.querySelector('form[action*="/admin/note/add"]');
+
+    document.querySelectorAll("label").forEach(function (label) {
+        if (label.textContent.trim().toLowerCase() !== "class") {
+            return;
+        }
+
+        if (noteForm && noteForm.contains(label)) {
+            return;
+        }
+
+        const field = label.nextElementSibling;
+        label.style.display = "none";
+
+        if (field) {
+            field.style.display = "none";
+        }
+    });
+
+    document.querySelectorAll("th").forEach(function (header) {
+        if (header.textContent.trim().toLowerCase() !== "class") {
+            return;
+        }
+
+        const index = Array.from(header.parentElement.children).indexOf(header);
+        header.style.display = "none";
+
+        const table = header.closest("table");
+        if (table) {
+            table.querySelectorAll("tr").forEach(function (row) {
+                if (row.children[index]) {
+                    row.children[index].style.display = "none";
+                }
+            });
+        }
+    });
+
+    document.querySelectorAll("p, div").forEach(function (element) {
+        if (!element.children.length) {
+            element.textContent = element.textContent.replace(
+                /class_level\s*,?\s*/gi,
+                ""
+            );
+        }
+    });
+}
+
+function removePortalClassText() {
+    const classPattern = /\b(JSS1|JSS2|JSS3|SS1|SS2|SS3)\s+student\s*[·•-]\s*/gi;
+
+    document.querySelectorAll("p, h1, h2, h3, div, span").forEach(function (element) {
+        if (element.children.length) {
+            return;
+        }
+
+        const text = element.textContent;
+        if (!text) {
+            return;
+        }
+
+        let cleaned = text.replace(classPattern, "");
+        cleaned = cleaned.replace(
+            /Practice WAEC, NECO and JAMB questions for\s+(JSS1|JSS2|JSS3|SS1|SS2|SS3)\.?/gi,
+            "Practice WAEC, NECO and JAMB questions."
+        );
+
+        if (cleaned !== text) {
+            element.textContent = cleaned;
+        }
+    });
+
+    document.querySelectorAll(".answer").forEach(function (element) {
+        element.textContent = element.textContent.replace(
+            /\nClass:\s*\n/gi,
+            "\n"
+        );
+    });
 }
 </script>
 
