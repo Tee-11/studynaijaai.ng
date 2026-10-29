@@ -1,9 +1,17 @@
 import csv
 import io
 
-from flask import request, redirect, url_for, flash
+from flask import request, redirect, url_for, flash, render_template
 
-from app import app, db, USE_POSTGRES, admin_required, limiter
+from app import (
+    app,
+    db,
+    USE_POSTGRES,
+    admin_required,
+    login_required,
+    limiter,
+    query,
+)
 
 
 @app.route(
@@ -174,3 +182,78 @@ def import_practice_questions_csv():
         )
 
     return redirect(url_for("admin"))
+
+
+@login_required
+def all_class_notes():
+    """Show lesson notes from every class to every logged-in user."""
+
+    subject = request.args.get("subject", "").strip()
+    term = request.args.get("term", "").strip()
+    search = request.args.get("search", "").strip()
+
+    params = []
+    sql = "SELECT * FROM notes WHERE 1=1"
+    placeholder = "%s" if USE_POSTGRES else "?"
+
+    if subject:
+        sql += f" AND subject = {placeholder}"
+        params.append(subject)
+
+    if term:
+        sql += f" AND term = {placeholder}"
+        params.append(term)
+
+    if search:
+        search_pattern = f"%{search}%"
+
+        if USE_POSTGRES:
+            sql += """
+                AND (
+                    title ILIKE %s
+                    OR subject ILIKE %s
+                    OR topic ILIKE %s
+                    OR class_level ILIKE %s
+                )
+            """
+        else:
+            sql += """
+                AND (
+                    title LIKE ?
+                    OR subject LIKE ?
+                    OR topic LIKE ?
+                    OR class_level LIKE ?
+                )
+            """
+
+        params.extend([
+            search_pattern,
+            search_pattern,
+            search_pattern,
+            search_pattern,
+        ])
+
+    sql += " ORDER BY class_level ASC, subject ASC, term ASC, title ASC"
+
+    rows = query(sql, tuple(params))
+
+    subject_rows = query("""
+        SELECT DISTINCT subject
+        FROM notes
+        ORDER BY subject
+    """)
+
+    subjects = [row["subject"] for row in subject_rows]
+
+    return render_template(
+        "notes.html",
+        notes=rows,
+        subjects=subjects,
+        subject=subject,
+        term=term,
+        search=search
+    )
+
+
+# Keep the existing /notes URL and endpoint name while removing the class restriction.
+app.view_functions["notes"] = all_class_notes
