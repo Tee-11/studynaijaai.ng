@@ -88,6 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (path.startsWith("/admin")) {
         addPracticeCsvImporter();
         removeAdminClassFields();
+        prepareClassFreeQuestionBankCsv();
     }
 
     removePortalClassText();
@@ -217,6 +218,70 @@ function removeAdminClassFields() {
                 ""
             );
         }
+    });
+}
+
+function prepareClassFreeQuestionBankCsv() {
+    const form = document.querySelector('form[action*="/admin/question/import"]');
+
+    if (!form) {
+        return;
+    }
+
+    const fileInput = form.querySelector('input[type="file"][name="csv_file"]');
+
+    if (!fileInput) {
+        return;
+    }
+
+    const helpText = form.querySelector("p.muted");
+    if (helpText) {
+        helpText.textContent = helpText.textContent.replace(
+            /class_level\s*,?\s*/gi,
+            ""
+        );
+    }
+
+    form.addEventListener("submit", function (event) {
+        const file = fileInput.files && fileInput.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        event.preventDefault();
+
+        const reader = new FileReader();
+
+        reader.onload = function () {
+            let text = String(reader.result || "");
+            const lines = text.split(/\r?\n/);
+
+            if (lines.length > 0 && !/class_level/i.test(lines[0])) {
+                lines[0] = lines[0].replace(/\s*$/, ",class_level");
+
+                for (let i = 1; i < lines.length; i++) {
+                    if (lines[i].trim() !== "") {
+                        lines[i] = lines[i].replace(/\s*$/, ",ALL");
+                    }
+                }
+
+                text = lines.join("\n");
+                const modifiedFile = new File(
+                    [text],
+                    file.name,
+                    { type: "text/csv" }
+                );
+
+                const transfer = new DataTransfer();
+                transfer.items.add(modifiedFile);
+                fileInput.files = transfer.files;
+            }
+
+            form.submit();
+        };
+
+        reader.readAsText(file);
     });
 }
 
