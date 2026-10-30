@@ -1,6 +1,7 @@
-from flask import render_template
+from flask import render_template, flash, redirect, url_for
 
 import app as app_module
+import wsgi
 
 from app import app, USE_POSTGRES, login_required, query
 
@@ -58,7 +59,6 @@ def payment_receipt_fixed(reference):
     )
 
     if not payment:
-        from flask import flash, redirect, url_for
         flash("Payment receipt not found.", "danger")
         return redirect(url_for("payment_history"))
 
