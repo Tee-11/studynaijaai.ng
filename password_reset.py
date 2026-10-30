@@ -63,7 +63,10 @@ def send_reset_email(email, reset_link):
     use_ssl = os.getenv("SMTP_USE_SSL", "false").strip().lower() == "true"
 
     if not host or not username or not password or not mail_from:
-        app.logger.error("Password reset email is not configured. Set SMTP_HOST, SMTP_USERNAME, SMTP_PASSWORD and MAIL_FROM.")
+        app.logger.error(
+            "Password reset email is not configured. Set SMTP_HOST, "
+            "SMTP_USERNAME, SMTP_PASSWORD and MAIL_FROM."
+        )
         return False
 
     message = EmailMessage()
@@ -106,8 +109,10 @@ def forgot_password():
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
 
-        # Always use the same public response so account existence is not revealed.
-        generic_message = "If an account with that email exists, a password reset link has been sent. Check your inbox and spam folder."
+        generic_message = (
+            "If an account with that email exists, a password reset link has been sent. "
+            "Check your inbox and spam folder."
+        )
 
         if not email:
             flash(generic_message, "info")
@@ -125,12 +130,13 @@ def forgot_password():
             flash(generic_message, "info")
             return redirect(url_for("forgot_password"))
 
-        # Invalidate previous unused reset links for this account.
         invalidate_sql = (
-            "UPDATE password_reset_tokens SET used_at = CURRENT_TIMESTAMP WHERE user_id = %s AND used_at IS NULL"
+            "UPDATE password_reset_tokens SET used_at = CURRENT_TIMESTAMP "
+            "WHERE user_id = %s AND used_at IS NULL"
             if USE_POSTGRES
             else
-            "UPDATE password_reset_tokens SET used_at = CURRENT_TIMESTAMP WHERE user_id = ? AND used_at IS NULL"
+            "UPDATE password_reset_tokens SET used_at = CURRENT_TIMESTAMP "
+            "WHERE user_id = ? AND used_at IS NULL"
         )
         query(invalidate_sql, (user["id"],), commit=True)
 
@@ -139,16 +145,12 @@ def forgot_password():
         expires_at = datetime.now(timezone.utc) + timedelta(minutes=RESET_MINUTES)
 
         insert_sql = (
-            """
-            INSERT INTO password_reset_tokens (user_id, token_hash, expires_at)
-            VALUES (%s, %s, %s)
-            """
+            "INSERT INTO password_reset_tokens (user_id, token_hash, expires_at) "
+            "VALUES (%s, %s, %s)"
             if USE_POSTGRES
             else
-            """
-            INSERT INTO password_reset_tokens (user_id, token_hash, expires_at)
-            VALUES (?, ?, ?)
-            """
+            "INSERT INTO password_reset_tokens (user_id, token_hash, expires_at) "
+            "VALUES (?, ?, ?)"
         )
         query(insert_sql, (user["id"], digest, expires_at.isoformat()), commit=True)
 
@@ -167,18 +169,12 @@ def reset_password(token):
     digest = token_digest(token)
 
     token_sql = (
-        """
-        SELECT id, user_id, expires_at, used_at
-        FROM password_reset_tokens
-        WHERE token_hash = %s
-        """
+        "SELECT id, user_id, expires_at, used_at "
+        "FROM password_reset_tokens WHERE token_hash = %s"
         if USE_POSTGRES
         else
-        """
-        SELECT id, user_id, expires_at, used_at
-        FROM password_reset_tokens
-        WHERE token_hash = ?
-        """
+        "SELECT id, user_id, expires_at, used_at "
+        "FROM password_reset_tokens WHERE token_hash = ?"
     )
     reset_record = query(token_sql, (digest,), one=True)
 
@@ -228,12 +224,10 @@ def reset_password(token):
         )
         query(mark_used_sql, (reset_record["id"],), commit=True)
 
-        flash("Your password has been reset successfully. You can now log in with your new password.", "success")
+        flash(
+            "Your password has been reset successfully. You can now log in with your new password.",
+            "success"
+        )
         return redirect(url_for("login"))
 
     return render_template("reset_password.html", valid=True)
-
-
-# Keep the existing payment-history fixes active while this module is the entrypoint.
-app.view_functions["payment_history"] = payment_fix.payment_history_fixed and app.view_functions["payment_history"]
-app.view_functions["payment_receipt"] = payment_fix.payment_receipt_fixed and app.view_functions["payment_receipt"]
