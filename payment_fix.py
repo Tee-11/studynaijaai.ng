@@ -71,6 +71,3 @@ def payment_receipt_fixed(reference):
 
 app.view_functions["payment_history"] = login_required(payment_history_fixed)
 app.view_functions["payment_receipt"] = login_required(payment_receipt_fixed)
-
-# Load the password-reset routes after the existing payment and wsgi overrides.
-import password_reset  # noqa: E402,F401
