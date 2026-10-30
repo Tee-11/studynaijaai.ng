@@ -8,7 +8,7 @@ from email.message import EmailMessage
 from flask import flash, redirect, render_template, request, url_for
 
 import app as app_module
-import payment_fix
+import wsgi
 
 from app import app, USE_POSTGRES, generate_password_hash, limiter, query, db
 
