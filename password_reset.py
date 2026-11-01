@@ -1,10 +1,9 @@
 import hashlib
 import os
 import secrets
-import smtplib
 from datetime import datetime, timedelta, timezone
-from email.message import EmailMessage
 
+import requests
 from flask import flash, redirect, render_template, request, url_for
 
 import app as app_module
@@ -55,48 +54,50 @@ def token_digest(token):
 
 
 def send_reset_email(email, reset_link):
-    host = os.getenv("SMTP_HOST", "").strip()
-    username = os.getenv("SMTP_USERNAME", "").strip()
-    password = os.getenv("SMTP_PASSWORD", "")
-    mail_from = os.getenv("MAIL_FROM", username).strip()
-    port = int(os.getenv("SMTP_PORT", "587"))
-    use_ssl = os.getenv("SMTP_USE_SSL", "false").strip().lower() == "true"
+    api_key = os.getenv("RESEND_API_KEY", "").strip()
+    mail_from = os.getenv("MAIL_FROM", "").strip()
 
-    if not host or not username or not password or not mail_from:
+    if not api_key or not mail_from:
         app.logger.error(
-            "Password reset email is not configured. Set SMTP_HOST, "
-            "SMTP_USERNAME, SMTP_PASSWORD and MAIL_FROM."
+            "Password reset email is not configured. Set RESEND_API_KEY and MAIL_FROM."
         )
         return False
 
-    message = EmailMessage()
-    message["Subject"] = "Reset your StudyNaija password"
-    message["From"] = mail_from
-    message["To"] = email
-    message.set_content(
-        "Hello,\n\n"
-        "We received a request to reset your StudyNaija password.\n\n"
-        f"Use this link to choose a new password:\n{reset_link}\n\n"
-        f"This link expires in {RESET_MINUTES} minutes and can only be used once.\n\n"
-        "If you did not request this, you can safely ignore this email.\n\n"
-        "StudyNaija"
-    )
+    payload = {
+        "from": mail_from,
+        "to": [email],
+        "subject": "Reset your StudyNaija password",
+        "text": (
+            "Hello,\n\n"
+            "We received a request to reset your StudyNaija password.\n\n"
+            f"Use this link to choose a new password:\n{reset_link}\n\n"
+            f"This link expires in {RESET_MINUTES} minutes and can only be used once.\n\n"
+            "If you did not request this, you can safely ignore this email.\n\n"
+            "StudyNaija"
+        ),
+    }
 
     try:
-        if use_ssl:
-            with smtplib.SMTP_SSL(host, port, timeout=20) as smtp:
-                smtp.login(username, password)
-                smtp.send_message(message)
-        else:
-            with smtplib.SMTP(host, port, timeout=20) as smtp:
-                smtp.ehlo()
-                smtp.starttls()
-                smtp.ehlo()
-                smtp.login(username, password)
-                smtp.send_message(message)
-        return True
+        response = requests.post(
+            "https://api.resend.com/emails",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json=payload,
+            timeout=20,
+        )
+        if response.ok:
+            return True
+
+        app.logger.error(
+            "Resend password reset email failed: HTTP %s - %s",
+            response.status_code,
+            response.text[:500],
+        )
+        return False
     except Exception:
-        app.logger.exception("Failed to send password reset email")
+        app.logger.exception("Failed to send password reset email through Resend")
         return False
 
 
