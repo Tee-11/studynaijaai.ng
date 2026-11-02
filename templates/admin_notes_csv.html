@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}
+Import Lesson Notes
+{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+    <h1>📚 Bulk Import Lesson Notes</h1>
+    <p>Upload many lesson notes at once and StudyNaija will save each one separately.</p>
+</div>
+
+<div class="wide-card">
+    <h2>📥 Upload Notes CSV</h2>
+
+    <p class="muted">
+        Prepare your notes in Excel or Google Sheets, save the sheet as CSV UTF-8,
+        then upload it here.
+    </p>
+
+    <p class="muted">
+        Required columns:
+        <strong>title, subject, class_level, term, topic, content</strong>
+    </p>
+
+    <p class="muted">
+        The <strong>content</strong> column can contain the complete lesson note,
+        including long text and line breaks.
+    </p>
+
+    <p style="margin-top: 18px;">
+        <a class="button secondary" href="{{ url_for('notes_csv_template') }}">
+            ⬇️ Download CSV Template
+        </a>
+    </p>
+
+    <form
+        method="post"
+        action="{{ url_for('import_notes_csv') }}"
+        enctype="multipart/form-data"
+        style="margin-top: 20px;"
+    >
+        <input
+            type="hidden"
+            name="csrf_token"
+            value="{{ csrf_token() }}"
+        >
+
+        <label>Choose CSV File</label>
+
+        <input
+            type="file"
+            name="csv_file"
+            accept=".csv,text/csv"
+            required
+        >
+
+        <button
+            class="button"
+            type="submit"
+            style="margin-top: 15px;"
+        >
+            📤 Import All Notes
+        </button>
+    </form>
+</div>
+
+<div class="wide-card">
+    <h2>Example</h2>
+
+    <p class="muted">
+        One CSV can contain notes for different subjects, topics, classes and terms.
+        StudyNaija will create each row as a separate lesson note.
+    </p>
+
+    <div style="overflow-x:auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Subject</th>
+                    <th>Class</th>
+                    <th>Term</th>
+                    <th>Topic</th>
+                    <th>Content</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Number Bases</td>
+                    <td>Mathematics</td>
+                    <td>JSS1</td>
+                    <td>First Term</td>
+                    <td>Number Bases</td>
+                    <td>Full lesson note...</td>
+                </tr>
+                <tr>
+                    <td>Living Things</td>
+                    <td>Basic Science</td>
+                    <td>JSS1</td>
+                    <td>First Term</td>
+                    <td>Characteristics of Living Things</td>
+                    <td>Full lesson note...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div style="margin-top: 20px;">
+    <a class="button secondary" href="{{ url_for('admin') }}">
+        ← Back to Admin Dashboard
+    </a>
+</div>
+
+{% endblock %}
