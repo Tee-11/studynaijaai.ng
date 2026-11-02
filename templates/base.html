@@ -87,6 +87,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (path.startsWith("/admin")) {
         addPracticeCsvImporter();
+        addNotesCsvImporter();
         removeAdminClassFields();
         prepareClassFreeQuestionBankCsv();
     }
@@ -171,6 +172,45 @@ function addPracticeCsvImporter() {
     `;
 
     practiceCard.insertAdjacentElement("afterend", card);
+}
+
+function addNotesCsvImporter() {
+    if (document.getElementById("notes-csv-import")) {
+        return;
+    }
+
+    const pageHead = document.querySelector(".page-head");
+    if (!pageHead) {
+        return;
+    }
+
+    const card = document.createElement("div");
+    card.className = "wide-card";
+    card.id = "notes-csv-import";
+    card.style.marginTop = "20px";
+
+    card.innerHTML = `
+        <h2>📚 Import Lesson Notes from CSV</h2>
+
+        <p class="muted">
+            Add many lesson notes at once. Put each lesson note on its own row
+            in a CSV file and StudyNaija will save them separately.
+        </p>
+
+        <p class="muted">
+            Required columns: title, subject, class_level, term, topic, content
+        </p>
+
+        <a
+            class="button"
+            href="/admin/notes/import"
+            style="display:inline-block;margin-top:10px;"
+        >
+            📥 Open Bulk Notes Importer
+        </a>
+    `;
+
+    pageHead.insertAdjacentElement("afterend", card);
 }
 
 function removeAdminClassFields() {
