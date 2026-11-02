@@ -14,6 +14,78 @@ def add_bulk_note_delete_ui(response):
     html = response.get_data(as_text=True)
 
     script = r"""
+<style>
+    .study-bulk-note-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin: 0 0 18px;
+        padding: 14px 16px;
+        border: 1px solid #dbe3ef;
+        border-radius: 12px;
+        background: #f8fafc;
+    }
+
+    .study-bulk-note-select {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin: 0;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .study-bulk-note-select input {
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .study-bulk-note-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .study-note-row {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+    }
+
+    .study-note-row .note-checkbox {
+        width: 18px;
+        height: 18px;
+        margin: 0 2px 0 0 !important;
+        flex: 0 0 auto;
+        cursor: pointer;
+    }
+
+    .study-note-row .note-content {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    @media (max-width: 600px) {
+        .study-bulk-note-toolbar {
+            align-items: stretch;
+        }
+
+        .study-bulk-note-actions,
+        .study-bulk-note-actions button {
+            width: 100%;
+        }
+
+        .study-bulk-note-actions button {
+            text-align: center;
+        }
+    }
+</style>
+
 <script>
 (function () {
     const cards = Array.from(document.querySelectorAll(".wide-card"));
@@ -37,44 +109,36 @@ def add_bulk_note_delete_ui(response):
     const csrfToken = csrfInput ? csrfInput.value : "";
 
     const toolbar = document.createElement("div");
-    toolbar.style.marginBottom = "20px";
-    toolbar.style.padding = "15px";
-    toolbar.style.border = "1px solid #dbe3ef";
-    toolbar.style.borderRadius = "12px";
-    toolbar.style.background = "#f8fafc";
-
+    toolbar.className = "study-bulk-note-toolbar";
     toolbar.innerHTML = `
-        <form
-            id="bulk-note-delete-form"
-            style="margin:0;"
-        >
-            <label
-                style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:600;"
-            >
-                <input
-                    type="checkbox"
-                    id="select-all-notes"
-                >
-                Select All Lesson Notes
-            </label>
+        <label class="study-bulk-note-select">
+            <input type="checkbox" id="select-all-notes">
+            <span>Select All Lesson Notes</span>
+        </label>
 
+        <div class="study-bulk-note-actions">
             <button
                 type="submit"
+                form="bulk-note-delete-form"
                 class="danger-button"
-                style="margin-top:12px;"
             >
-                🗑️ Delete Selected Notes
+                🗑️ Delete Selected
             </button>
-        </form>
+        </div>
     `;
+
+    const form = document.createElement("form");
+    form.id = "bulk-note-delete-form";
+    form.style.display = "none";
+    document.body.appendChild(form);
 
     notesCard.insertBefore(toolbar, rows[0]);
 
     rows.forEach(row => {
-        const form = row.querySelector("form");
-        if (!form) return;
+        const deleteForm = row.querySelector("form");
+        if (!deleteForm) return;
 
-        const action = form.getAttribute("action") || "";
+        const action = deleteForm.getAttribute("action") || "";
         const match = action.match(/\/admin\/note\/delete\/(\d+)/);
         if (!match) return;
 
@@ -83,25 +147,28 @@ def add_bulk_note_delete_ui(response):
         checkbox.value = match[1];
         checkbox.className = "note-checkbox";
         checkbox.dataset.deleteUrl = action;
-        checkbox.style.marginRight = "10px";
-        checkbox.style.flexShrink = "0";
+        checkbox.setAttribute("aria-label", "Select lesson note");
 
-        row.style.display = "flex";
-        row.style.alignItems = "center";
-        row.style.gap = "8px";
+        row.classList.add("study-note-row");
 
-        row.insertBefore(checkbox, row.firstChild);
+        const content = document.createElement("div");
+        content.className = "note-content";
+
+        while (row.firstChild) {
+            content.appendChild(row.firstChild);
+        }
+
+        row.appendChild(checkbox);
+        row.appendChild(content);
     });
 
     const selectAll = document.getElementById("select-all-notes");
 
-    if (selectAll) {
-        selectAll.addEventListener("change", function () {
-            document.querySelectorAll(".note-checkbox").forEach(box => {
-                box.checked = selectAll.checked;
-            });
+    selectAll.addEventListener("change", function () {
+        document.querySelectorAll(".note-checkbox").forEach(box => {
+            box.checked = selectAll.checked;
         });
-    }
+    });
 
     document.getElementById("bulk-note-delete-form").addEventListener("submit", async function (event) {
         event.preventDefault();
@@ -119,7 +186,9 @@ def add_bulk_note_delete_ui(response):
             return;
         }
 
-        const button = this.querySelector("button[type='submit']");
+        const button = document.querySelector(
+            ".study-bulk-note-actions button"
+        );
         button.disabled = true;
         button.textContent = "Deleting...";
 
@@ -145,7 +214,7 @@ def add_bulk_note_delete_ui(response):
             window.location.href = "/admin";
         } catch (error) {
             button.disabled = false;
-            button.textContent = "🗑️ Delete Selected Notes";
+            button.textContent = "🗑️ Delete Selected";
             alert("Something went wrong while deleting the selected notes. Please refresh and try again.");
         }
     });
