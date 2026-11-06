@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Manage Videos - StudyNaija{% endblock %}
+{% block content %}
+<div class="page-head">
+    <h1>🎬 Manage Educational Videos</h1>
+    <p>Upload videos to Mux, manage the weekly video collection and review valid views.</p>
+</div>
+<div class="wide-card" style="max-width:900px;margin:20px auto;">
+    <h2>➕ Add Video</h2>
+    <p class="muted">You can keep up to 10 active videos at a time on the current Mux Free setup. Each video must be 10 minutes or shorter.</p>
+    <p><strong>Active videos:</strong> {{ active_count }} / {{ max_active }}</p>
+    <form id="video-upload-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Video title</label>
+        <input name="title" required maxlength="200" placeholder="Example: Introduction to Algebra">
+        <label>Subject</label>
+        <input name="subject" required maxlength="100" placeholder="Mathematics">
+        <label>Creator name</label>
+        <input name="creator_name" required maxlength="160" placeholder="Name of the person who created this video">
+        <label>Description</label>
+        <textarea name="description" rows="3" placeholder="Briefly describe what students will learn"></textarea>
+        <label>Select video file</label>
+        <input id="video-file" type="file" accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm" required>
+        <button class="button" id="upload-button" type="submit" style="margin-top:15px;">📤 Upload Video</button>
+    </form>
+    <div id="upload-status" role="status" style="margin-top:15px;"></div>
+    <progress id="upload-progress" value="0" max="100" style="width:100%;display:none;"></progress>
+</div>
+<div class="wide-card" style="max-width:1100px;margin:20px auto;">
+    <h2>Uploaded Videos and Creator Views</h2>
+    {% if videos %}
+    <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;">
+        <thead><tr><th>Video</th><th>Creator</th><th>Status</th><th>Duration</th><th>Valid views</th><th>Action</th></tr></thead>
+        <tbody>
+        {% for video in videos %}
+        <tr>
+            <td><strong>{{ video.title }}</strong><br><span class="muted">{{ video.subject }}</span></td>
+            <td>{{ video.creator_name }}</td>
+            <td>{{ video.status|title }}{% if video.is_deleted %} (removed){% endif %}</td>
+            <td>{% if video.duration_seconds %}{{ (video.duration_seconds // 60) }}m {{ (video.duration_seconds % 60) }}s{% else %}—{% endif %}</td>
+            <td>{{ video.valid_views }}</td>
+            <td>
+                {% if not video.is_deleted %}
+                <form method="post" action="{{ url_for('delete_study_video', video_id=video.id) }}" onsubmit="return confirm('Delete this video from Mux? Its view records will be kept.');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="danger-button" type="submit">Delete</button>
+                </form>
+                {% else %}—{% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}<p class="muted">No videos have been uploaded yet.</p>{% endif %}
+</div>
+<p style="text-align:center;"><a href="{{ url_for('admin') }}">← Back to Admin Dashboard</a></p>
+<script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script>
+<script>
+const uploadForm = document.getElementById("video-upload-form");
+uploadForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    const file = document.getElementById("video-file").files[0];
+    const status = document.getElementById("upload-status");
+    const button = document.getElementById("upload-button");
+    const progress = document.getElementById("upload-progress");
+    if (!file) { status.textContent = "Choose a video file first."; return; }
+    if (!file.type.startsWith("video/")) { status.textContent = "Please select a video file."; return; }
+    button.disabled = true;
+    status.textContent = "Preparing secure upload...";
+    progress.style.display = "block";
+    progress.value = 0;
+    try {
+        const formData = new FormData(uploadForm);
+        const response = await fetch("{{ url_for('create_video_upload') }}", {
+            method: "POST",
+            headers: {"X-CSRFToken": formData.get("csrf_token")},
+            body: formData
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Could not create upload.");
+        status.textContent = "Uploading video to Mux...";
+        const upload = new tus.Upload(file, {
+            endpoint: data.upload_url,
+            retryDelays: [0, 1000, 3000, 5000],
+            metadata: {filename: file.name, filetype: file.type || "video/mp4"},
+            onError: function(error) {
+                status.textContent = "Upload failed: " + error;
+                button.disabled = false;
+            },
+            onProgress: function(bytesUploaded, bytesTotal) {
+                const percent = Math.floor(bytesUploaded / bytesTotal * 100);
+                progress.value = percent;
+                status.textContent = "Uploading: " + percent + "%";
+            },
+            onSuccess: async function() {
+                status.textContent = "Upload received. Mux is processing your video...";
+                let ready = false;
+                for (let i = 0; i < 90; i++) {
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                    const check = await fetch("/admin/videos/check/" + data.video_id);
+                    const result = await check.json();
+                    if (result.status === "ready") { ready = true; break; }
+                    if (result.status === "rejected" || result.status === "failed" || result.error) {
+                        throw new Error(result.error || "Mux could not process this video.");
+                    }
+                }
+                if (!ready) throw new Error("Video is still processing. Refresh this page later to check its status.");
+                status.textContent = "Video uploaded and ready for Premium students!";
+                setTimeout(() => window.location.reload(), 1500);
+            }
+        });
+        upload.start();
+    } catch (error) {
+        status.textContent = error.message;
+        button.disabled = false;
+    }
+});
+</script>
+{% endblock %}
