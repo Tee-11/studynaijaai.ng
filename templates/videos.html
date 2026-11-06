@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Educational Videos - StudyNaija{% endblock %}
+{% block content %}
+<div class="page-head">
+    <h1>🎬 Educational Videos</h1>
+    <p>Watch lessons selected for StudyNaija Premium students.</p>
+</div>
+<div class="admin-grid">
+{% for video in videos %}
+    <a class="wide-card link-card" href="{{ url_for('study_video_player', video_id=video.id) }}" style="text-decoration:none;">
+        <div style="font-size:32px;">▶️</div>
+        <h2>{{ video.title }}</h2>
+        <p><strong>{{ video.subject }}</strong></p>
+        <p class="muted">{{ video.description }}</p>
+        <p class="muted">By {{ video.creator_name }} · {{ (video.duration_seconds // 60) }}m {{ (video.duration_seconds % 60) }}s</p>
+    </a>
+{% else %}
+    <div class="wide-card"><p>No educational videos are available right now. Please check again later.</p></div>
+{% endfor %}
+</div>
+<p style="text-align:center;"><a href="{{ url_for('dashboard') }}">← Back to Dashboard</a></p>
+{% endblock %}
