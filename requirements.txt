@@ -6,3 +6,4 @@ psycopg2-binary==2.9.10
 Flask-WTF
 Flask-Limiter[redis]
 openai
+PyJWT[crypto]==2.10.1
