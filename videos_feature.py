@@ -1,4 +1,5 @@
 import os
+import base64
 import time
 import uuid
 import requests
@@ -39,6 +40,8 @@ def _mux_request(method, path, payload=None):
         except Exception:
             detail = []
         raise RuntimeError("Mux request failed: " + (", ".join(detail) or response.text[:300]))
+    if response.status_code == 204 or not response.content:
+        return {}
     return response.json().get("data", {})
 
 
@@ -174,7 +177,7 @@ def create_video_upload():
         upload = _mux_request("POST", "/uploads", {
             "cors_origin": origin,
             "new_asset_settings": {
-                "playback_policy": ["signed"],
+                "playback_policies": ["signed"],
                 "video_quality": "basic"
             }
         })
@@ -272,9 +275,16 @@ def delete_study_video(video_id):
 
 def _make_playback_token(playback_id):
     key_id = os.getenv("MUX_SIGNING_KEY_ID", "").strip()
-    private_key = os.getenv("MUX_SIGNING_PRIVATE_KEY", "").replace("\\n", "\n").strip()
+    private_key = os.getenv("MUX_SIGNING_PRIVATE_KEY", "").strip()
     if not key_id or not private_key:
         raise RuntimeError("Mux signing key is not configured in Render.")
+    if not private_key.startswith("-----BEGIN"):
+        try:
+            private_key = base64.b64decode(private_key)
+        except Exception as exc:
+            raise RuntimeError("Mux signing private key must be the original base64 key from Mux.") from exc
+    else:
+        private_key = private_key.replace("\\n", "\n").encode("utf-8")
     payload = {
         "sub": playback_id,
         "aud": "v",
