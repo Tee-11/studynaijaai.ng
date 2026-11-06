@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ video.title }} - StudyNaija{% endblock %}
+{% block content %}
+<div class="wide-card" style="max-width:1000px;margin:25px auto;">
+    <h1>{{ video.title }}</h1>
+    <p class="muted">{{ video.subject }} · By {{ video.creator_name }}</p>
+    {% if video.description %}<p>{{ video.description }}</p>{% endif %}
+    <mux-player id="study-video-player" playback-id="{{ video.playback_id }}" stream-type="on-demand" controls style="width:100%;aspect-ratio:16/9;" ></mux-player>
+    <p id="watch-message" class="muted" aria-live="polite">{% if already_viewed %}You have already received a valid view for this video.{% else %}Watch at least half of this video continuously to register one valid view.{% endif %}</p>
+    <p><a href="{{ url_for('study_videos') }}">← Back to Videos</a></p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@mux/mux-player"></script>
+<script>
+(async function() {
+    const player = document.getElementById("study-video-player");
+    const message = document.getElementById("watch-message");
+    const alreadyViewed = {{ 'true' if already_viewed else 'false' }};
+    const token = {{ playback_token|tojson }};
+    player.tokens = {playback: token};
+    if (alreadyViewed) return;
+    const csrf = {{ csrf_token()|tojson }};
+    const start = await fetch("{{ url_for('start_video_watch', video_id=video.id) }}", {
+        method: "POST", headers: {"X-CSRFToken": csrf}
+    });
+    if (!start.ok) { message.textContent = "Could not start view tracking. Please refresh."; return; }
+    const session = await start.json();
+    let lastSent = 0;
+    async function sendProgress(reset) {
+        try {
+            const response = await fetch("{{ url_for('video_watch_progress', video_id=video.id) }}", {
+                method: "POST",
+                headers: {"Content-Type": "application/json", "X-CSRFToken": csrf},
+                body: JSON.stringify({session_key: session.session_key, position: player.currentTime || 0, reset: !!reset})
+            });
+            if (response.ok) {
+                const result = await response.json();
+                if (result.counted) message.textContent = "✓ Your valid view has been recorded.";
+                else message.textContent = "Keep watching continuously to complete your valid view.";
+            }
+        } catch (e) {}
+    }
+    player.addEventListener("timeupdate", function() {
+        const now = Date.now();
+        if (!player.paused && now - lastSent >= 4500) {
+            lastSent = now;
+            sendProgress(false);
+        }
+    });
+    ["pause", "seeking", "waiting", "stalled", "ended"].forEach(name => {
+        player.addEventListener(name, () => sendProgress(true));
+    });
+    document.addEventListener("visibilitychange", () => {
+        if (document.hidden) sendProgress(true);
+    });
+    window.addEventListener("pagehide", () => {
+        const body = JSON.stringify({session_key: session.session_key, position: player.currentTime || 0, reset: true});
+        fetch("{{ url_for('video_watch_progress', video_id=video.id) }}", {
+            method: "POST", keepalive: true,
+            headers: {"Content-Type": "application/json", "X-CSRFToken": csrf},
+            body
+        });
+    });
+})();
+</script>
+{% endblock %}
