@@ -56,7 +56,6 @@
     {% else %}<p class="muted">No videos have been uploaded yet.</p>{% endif %}
 </div>
 <p style="text-align:center;"><a href="{{ url_for('admin') }}">← Back to Admin Dashboard</a></p>
-<script src="https://cdn.jsdelivr.net/npm/tus-js-client@4.3.1/dist/tus.min.js"></script>
 <script>
 const uploadForm = document.getElementById("video-upload-form");
 uploadForm.addEventListener("submit", async function(event) {
@@ -81,20 +80,25 @@ uploadForm.addEventListener("submit", async function(event) {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Could not create upload.");
         status.textContent = "Uploading video to Mux...";
-        const upload = new tus.Upload(file, {
-            endpoint: data.upload_url,
-            retryDelays: [0, 1000, 3000, 5000],
-            metadata: {filename: file.name, filetype: file.type || "video/mp4"},
-            onError: function(error) {
-                status.textContent = "Upload failed: " + error;
-                button.disabled = false;
-            },
-            onProgress: function(bytesUploaded, bytesTotal) {
-                const percent = Math.floor(bytesUploaded / bytesTotal * 100);
+        const xhr = new XMLHttpRequest();
+        xhr.open("PUT", data.upload_url, true);
+        xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+        xhr.upload.addEventListener("progress", function(event) {
+            if (event.lengthComputable) {
+                const percent = Math.floor(event.loaded / event.total * 100);
                 progress.value = percent;
                 status.textContent = "Uploading: " + percent + "%";
-            },
-            onSuccess: async function() {
+            }
+        });
+        xhr.onerror = function() {
+            status.textContent = "Upload failed. Please check your connection and try again.";
+            button.disabled = false;
+        };
+        xhr.onload = async function() {
+            try {
+                if (xhr.status < 200 || xhr.status >= 300) {
+                    throw new Error("Mux rejected the upload (HTTP " + xhr.status + ").");
+                }
                 status.textContent = "Upload received. Mux is processing your video...";
                 let ready = false;
                 for (let i = 0; i < 90; i++) {
@@ -109,9 +113,13 @@ uploadForm.addEventListener("submit", async function(event) {
                 if (!ready) throw new Error("Video is still processing. Refresh this page later to check its status.");
                 status.textContent = "Video uploaded and ready for Premium students!";
                 setTimeout(() => window.location.reload(), 1500);
+            } catch (error) {
+                status.textContent = error.message;
+                button.disabled = false;
             }
-        });
-        upload.start();
+        };
+        status.textContent = "Uploading video to Mux...";
+        xhr.send(file);
     } catch (error) {
         status.textContent = error.message;
         button.disabled = false;
