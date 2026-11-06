@@ -3,6 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
+    <link rel="icon" href="{{ url_for('static', filename='studynaija-icon.svg') }}" type="image/svg+xml">
 
     <title>{% block title %}StudyNaija{% endblock %}</title>
 
@@ -82,6 +85,29 @@
 </footer>
 
 <script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+        navigator.serviceWorker.register("/service-worker.js", {
+            scope: "/",
+            updateViaCache: "none"
+        }).then(function (registration) {
+            registration.update().catch(function () {});
+
+            document.addEventListener("visibilitychange", function () {
+                if (document.visibilityState === "visible") {
+                    registration.update().catch(function () {});
+                }
+            });
+
+            window.setInterval(function () {
+                registration.update().catch(function () {});
+            }, 60 * 60 * 1000);
+        }).catch(function (error) {
+            console.error("StudyNaija PWA registration failed:", error);
+        });
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const path = window.location.pathname;
 
