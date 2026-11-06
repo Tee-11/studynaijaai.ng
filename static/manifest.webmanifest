@@ -1,0 +1,19 @@
+{
+  "id": "/",
+  "name": "StudyNaija",
+  "short_name": "StudyNaija",
+  "description": "Your study companion for lesson notes, practice questions and learning.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/static/studynaija-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
