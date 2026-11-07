@@ -6731,5 +6731,34 @@ def delete_student(user_id):
     )
 
 
+
+@app.route("/sitemap.xml")
+def sitemap():
+    sitemap_xml = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://studynaijai-ng.onrender.com/</loc>
+    </url>
+</urlset>
+"""
+    return app.response_class(
+        sitemap_xml,
+        mimetype="application/xml"
+    )
+
+
+@app.route("/robots.txt")
+def robots_txt():
+    robots_text = """User-agent: *
+Allow: /
+
+Sitemap: https://studynaijai-ng.onrender.com/sitemap.xml
+"""
+    return app.response_class(
+        robots_text,
+        mimetype="text/plain"
+    )
+
+
 if __name__ == "__main__":
     app.run(debug=True)
