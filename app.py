@@ -15,6 +15,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from openai import OpenAI
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "change-this-secret-key")
+
+# Keep authentication and CSRF session cookies reliable on the HTTPS Render site.
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+)
+
 PAYSTACK_SECRET_KEY = os.getenv("PAYSTACK_SECRET_KEY")
 PAYSTACK_PLAN_AMOUNT = 500000
 PAYSTACK_CURRENCY = "NGN"
@@ -25,6 +33,18 @@ limiter = Limiter(
 )
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 openai_client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
+
+
+@app.after_request
+def prevent_auth_page_caching(response):
+    # Login/register pages contain CSRF tokens tied to the visitor's session.
+    # Prevent browsers and intermediary caches from reusing stale token pages.
+    if request.endpoint in ("login", "register"):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        response.headers["Vary"] = "Cookie"
+    return response
 
 
 DATABASE_URL = os.getenv("DATABASE_URL", "")
