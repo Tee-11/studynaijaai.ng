@@ -2,7 +2,7 @@
   "id": "/",
   "name": "StudyNaija",
   "short_name": "StudyNaija",
-  "description": "Your study companion for lesson notes, practice questions and learning.",
+  "description": "StudyNaija helps Nigerian students learn with lesson notes, practice questions, quizzes, challenges and AI learning support.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -13,7 +13,7 @@
       "src": "/static/studynaija-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
