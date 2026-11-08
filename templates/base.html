@@ -5,10 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="google-site-verification" content="4cjevriJQphAdvb7kJhInz0lhWMiRzfjHvREG6AKS7Q">
     <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="{% block meta_description %}StudyNaija is a learning platform for Nigerian secondary school students, offering lesson notes, practice questions, quizzes, academic challenges and AI-powered learning support.{% endblock %}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{% block canonical_url %}{{ url_for('home', _external=True) }}{% endblock %}">
     <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
     <link rel="icon" href="{{ url_for('static', filename='studynaija-icon.svg') }}" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='studynaija-icon.svg') }}">
 
-    <title>{% block title %}StudyNaija{% endblock %}</title>
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="StudyNaija">
+    <meta property="og:title" content="{% block og_title %}StudyNaija | Notes, Quizzes & AI Learning{% endblock %}">
+    <meta property="og:description" content="Explore Nigerian secondary school lesson notes, practice quizzes, academic challenges and AI learning support with StudyNaija.">
+    <meta property="og:url" content="{{ url_for('home', _external=True) }}">
+    <meta property="og:image" content="{{ url_for('static', filename='studynaija-icon.svg', _external=True) }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="StudyNaija | Notes, Quizzes & AI Learning">
+    <meta name="twitter:description" content="Lesson notes, practice quizzes and AI learning support for Nigerian students.">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "StudyNaija",
+      "alternateName": "StudyNaija Learning Platform",
+      "url": "https://studynaija-ng.onrender.com/",
+      "description": "A learning platform for Nigerian secondary school students, with lesson notes, practice questions, quizzes and AI-powered learning support."
+    }
+    </script>
+
+    <title>{% block title %}StudyNaija | Notes, Quizzes & AI Learning{% endblock %}</title>
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}">
