@@ -6780,5 +6780,17 @@ Sitemap: https://studynaija-ng.onrender.com/sitemap.xml
     )
 
 
+@app.route("/cf053847-f135-4ec0-b2db-709268f5b80a.txt")
+def indexnow_key_file():
+    indexnow_key = os.getenv("INDEXNOW_KEY", "")
+    if not indexnow_key:
+        return "IndexNow key is not configured.", 404
+
+    return app.response_class(
+        indexnow_key,
+        mimetype="text/plain"
+    )
+
+
 if __name__ == "__main__":
     app.run(debug=True)
